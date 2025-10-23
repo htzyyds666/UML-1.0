@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<h3 class="mb-3">优先级分析</h3>
+
+<p>在这里，你可以查看所有需求的优先级排序（WSJF）和需求的 MoSCoW 分类。WSJF 值越高的需求应当优先处理。</p>
+
+<ul class="nav nav-tabs mb-3" role="tablist">
+  <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-wsjf" type="button">WSJF 排序表</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-moscow" type="button">MoSCoW 分类表</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-charts" type="button">图表</button></li>
+</ul>
+
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="tab-wsjf">
+    <table class="table table-striped">
+      <thead><tr><th>#</th><th>标题</th><th>WSJF</th><th>BV+TC+RR</th><th>Effort</th><th>MoSCoW</th></tr></thead>
+      <tbody>
+      {% for r in items %}
+        <tr><td>{{ loop.index }}</td><td>{{ r.title }}</td><td>{{ '%.2f'|format(r.wsjf) }}</td>
+            <td>{{ r.business_value + r.time_criticality + r.risk_reduction }}</td>
+            <td>{{ r.effort }}</td><td>{{ r.moscow }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <small class="form-text text-muted">WSJF 排序表根据优先级对需求进行排序，WSJF 越高的需求优先级越高。</small>
+  </div>
+
+  <div class="tab-pane fade" id="tab-moscow">
+    <div class="row g-3">
+      {% for m in ['M','S','C','W'] %}
+      <div class="col-md-3">
+        <div class="card">
+          <div class="card-header">类别 {{m}}</div>
+          <ul class="list-group list-group-flush">
+            {% for r in items if r.moscow == m %}<li class="list-group-item">{{ r.title }}</li>{% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <small class="form-text text-muted">MoSCoW 分类表将需求分为四个类别：`M`（必须做），`S`（应该做），`C`（可以做），`W`（不做）。</small>
+  </div>
+
+  <div class="tab-pane fade" id="tab-charts">
+    <div class="row">
+      <div class="col-lg-6"><h6>MoSCoW 数量柱状图</h6><canvas id="barChart"></canvas></div>
+      <div class="col-lg-6"><h6>价值-工作量 气泡图</h6><canvas id="bubbleChart"></canvas></div>
+    </div>
+    <small class="form-text text-muted">图表展示了各个需求在不同维度下的优先级分布。</small>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  const mCount = {{ m_count|tojson }};
+  const data = {{ chart_data|tojson }};
+  if (document.getElementById('barChart')) {
+    new Chart(document.getElementById('barChart'), {
+      type:'bar',
+      data:{labels:['M','S','C','W'],datasets:[{label:'数量',data:[mCount.M||0,mCount.S||0,mCount.C||0,mCount.W||0]}]},
+      options:{responsive:true}
+    });
+  }
+  const groups={'M':[],'S':[],'C':[],'W':[]};
+  data.forEach(d=>groups[d.moscow].push({x:d.effort,y:d.value_sum,r:Math.max(6,d.risk_level*3),title:d.title}));
+  if (document.getElementById('bubbleChart')) {
+    new Chart(document.getElementById('bubbleChart'), {
+      type:'bubble',
+      data:{datasets:Object.keys(groups).map(k=>({label:'类别 '+k,data:groups[k]}))},
+      options:{responsive:true,plugins:{tooltip:{callbacks:{label:c=>`${c.raw.title} (Effort ${c.raw.x}, Value ${c.raw.y})`}}},scales:{x:{title:{display:true,text:'Effort (1-10)'}},y:{title:{display:true,text:'BV+TC+RR (3-30)'}}}}
+    });
+  }
+</script>
+{% endblock %}

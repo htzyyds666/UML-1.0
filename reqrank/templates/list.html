@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+<h3 class="mb-3">需求列表</h3>
+
+<p>以下是所有需求的列表，其中每个需求的优先级（WSJF）由需求的重要性（BV）、时效性（TC）、风险降低（RR）和工作量（Effort）共同决定。WSJF 值越高的需求越应该优先处理。</p>
+
+<form class="row g-2 mb-3" method="get" action="/requirements">
+  <div class="col-md-4">
+    <input class="form-control" name="q" placeholder="搜索标题…" value="{{ q or '' }}">
+  </div>
+  <div class="col-md-2">
+    <select class="form-select" name="status">
+      <option value="">状态（全部）</option>
+      <option value="todo"  {{ 'selected' if status=='todo'  else '' }}>待办</option>
+      <option value="doing" {{ 'selected' if status=='doing' else '' }}>进行中</option>
+      <option value="done"  {{ 'selected' if status=='done'  else '' }}>已完成</option>
+    </select>
+  </div>
+  <div class="col-md-2">
+    <select class="form-select" name="moscow">
+      <option value="">MoSCoW（全部）</option>
+      {% for m in ["M","S","C","W"] %}
+        <option value="{{m}}" {{ 'selected' if moscow==m else '' }}>{{m}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <select class="form-select" name="sort">
+      <option value="">排序（默认创建时间）</option>
+      <option value="wsjf"   {{ 'selected' if sort=='wsjf'   else '' }}>按 WSJF（降序）</option>
+      <option value="created"{{ 'selected' if sort=='created'else '' }}>按创建时间（降序）</option>
+    </select>
+  </div>
+  <div class="col-md-2 d-flex gap-2">
+    <button class="btn btn-primary w-100" type="submit">筛选</button>
+    <a class="btn btn-dark w-100" href="/export/csv">导出全部</a>
+  </div>
+</form>
+
+{% if not items %}
+<div class="alert alert-info">
+  暂无数据。你可以先 <a href="/seed">一键生成示例数据</a> 或 <a href="/requirements/new">新建一条需求</a>。
+</div>
+{% else %}
+<table class="table table-striped table-hover align-middle">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>标题</th>
+      <th>MoSCoW</th>
+      <th>BV</th>
+      <th>TC</th>
+      <th>RR</th>
+      <th>Effort</th>
+      <th>WSJF</th>
+      <th>状态</th>
+      <th>负责人</th>
+      <th style="width:160px">操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in items %}
+    <tr>
+      <td>{{ item.id }}</td>
+      <td>{{ item.title }}</td>
+      <td>{{ item.moscow }}</td>
+      <td>{{ item.business_value }}</td>
+      <td>{{ item.time_criticality }}</td>
+      <td>{{ item.risk_reduction }}</td>
+      <td>{{ item.effort }}</td>
+      <td>{{ '%.2f'|format(item.wsjf) }}</td>
+      <td>{{ item.status }}</td>
+      <td>{{ item.assignee }}</td>
+      <td>
+        <a class="btn btn-sm btn-outline-primary" href="/requirements/{{item.id}}/edit">编辑</a>
+        <form action="/requirements/{{item.id}}/delete" method="post" style="display:inline" onsubmit="return confirm('确定删除？');">
+          <button class="btn btn-sm btn-outline-danger" type="submit">删除</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endblock %}

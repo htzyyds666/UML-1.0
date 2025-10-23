@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block content %}
+<h3 class="mb-3">{{ '编辑需求' if item else '新建需求' }}</h3>
+
+<form method="post" class="row g-3">
+  <div class="col-md-8">
+    <label class="form-label">需求标题 *</label>
+    <input required class="form-control" name="title" placeholder="简短描述需求" value="{{ item.title if item else '' }}">
+    <small class="form-text text-muted">例如：用户注册、导出报告等</small>
+  </div>
+  
+  <div class="col-md-12">
+    <label class="form-label">需求描述</label>
+    <textarea class="form-control" name="description" rows="3" placeholder="简要描述需求的内容和背景">{{ item.description if item else '' }}</textarea>
+    <small class="form-text text-muted">请提供关于该需求的更多详细信息。</small>
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">需求重要性</label>
+    <select class="form-select" name="importance">
+      <option value="high"   {{ 'selected' if item and item.business_value >= 8 else '' }}>高</option>
+      <option value="medium" {{ 'selected' if item and 4 <= item.business_value < 8 else '' }}>中</option>
+      <option value="low"    {{ 'selected' if item and item.business_value < 4 else '' }}>低</option>
+    </select>
+    <small class="form-text text-muted">选择该需求对公司运营的重要性，高表示需求非常关键。</small>
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">时效性</label>
+    <select class="form-select" name="urgency">
+      <option value="high"   {{ 'selected' if item and item.time_criticality >= 8 else '' }}>非常紧急</option>
+      <option value="medium" {{ 'selected' if item and 4 <= item.time_criticality < 8 else '' }}>有一定紧迫性</option>
+      <option value="low"    {{ 'selected' if item and item.time_criticality < 4 else '' }}>不紧急</option>
+    </select>
+    <small class="form-text text-muted">选择完成该需求的时限要求，紧急意味着需要快速完成。</small>
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">风险等级</label>
+    <select class="form-select" name="risk">
+      <option value="high"   {{ 'selected' if item and item.risk_reduction <= 3 else '' }}>高风险</option>
+      <option value="medium" {{ 'selected' if item and 4 <= item.risk_reduction <= 7 else '' }}>中等风险</option>
+      <option value="low"    {{ 'selected' if item and item.risk_reduction > 7 else '' }}>低风险</option>
+    </select>
+    <small class="form-text text-muted">选择需求完成后能降低的风险程度，低风险表示需求对项目影响较小。</small>
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">工作量</label>
+    <select class="form-select" name="effort">
+      <option value="small"  {{ 'selected' if item and item.effort <= 3 else '' }}>小</option>
+      <option value="medium" {{ 'selected' if item and 4 <= item.effort <= 7 else '' }}>中</option>
+      <option value="large"  {{ 'selected' if item and item.effort > 7 else '' }}>大</option>
+    </select>
+    <small class="form-text text-muted">选择该需求的预期工作量，"小" 表示需求简单且所需时间短。</small>
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">负责人</label>
+    <input class="form-control" name="assignee" placeholder="选择负责人" value="{{ item.assignee if item else '' }}">
+    <small class="form-text text-muted">选择负责该需求的人员。</small>
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">状态</label>
+    <select class="form-select" name="status">
+      <option value="todo"  {{ 'selected' if item and item.status == 'todo' else '' }}>待办</option>
+      <option value="doing" {{ 'selected' if item and item.status == 'doing' else '' }}>进行中</option>
+      <option value="done"  {{ 'selected' if item and item.status == 'done' else '' }}>完成</option>
+    </select>
+    <small class="form-text text-muted">选择需求的当前状态。</small>
+  </div>
+
+  <div class="col-12">
+    <button class="btn btn-primary" type="submit">保存</button>
+  </div>
+</form>
+
+<div class="mt-3">
+  <p>实时 WSJF 预估：<strong id="wsjfPreview">—</strong></p>
+</div>
+
+<script>
+  function calc() {
+    const gv = n => Math.max(1, Math.min(10, parseInt(n || 0)));
+    const bv = gv(document.querySelector('[name=importance]').value === 'high' ? 10 : (document.querySelector('[name=importance]').value === 'medium' ? 5 : 1));
+    const tc = gv(document.querySelector('[name=urgency]').value === 'high' ? 10 : (document.querySelector('[name=urgency]').value === 'medium' ? 5 : 1));
+    const rr = gv(document.querySelector('[name=risk]').value === 'high' ? 1 : (document.querySelector('[name=risk]').value === 'medium' ? 5 : 10));
+    const e = gv(document.querySelector('[name=effort]').value === 'small' ? 3 : (document.querySelector('[name=effort]').value === 'medium' ? 6 : 9));
+    const wsjf = (bv + tc + rr) / e;
+    document.getElementById('wsjfPreview').innerText = wsjf.toFixed(2);
+  }
+  document.querySelectorAll('select').forEach(el => el.addEventListener('change', calc));
+  calc();
+</script>
+{% endblock %}
