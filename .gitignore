@@ -1,0 +1,15 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+jdk-25.0.1
+plantuml.jar
+mmexport1761537933264.jpg
+test/
