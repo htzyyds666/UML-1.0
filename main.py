@@ -2,6 +2,9 @@
 import os
 import json
 import base64
+import subprocess
+import tempfile
+import datetime
 from typing import Union, Dict, Any, Optional
 from pathlib import Path
 import json5
@@ -352,6 +355,149 @@ class UMLParser:
         plantuml_code.append("@enduml")
         
         return "\n".join(plantuml_code)
+    
+    def generate_plantuml_image(self, plantuml_code: str, output_filename: str = None, java_path: str = None) -> str:
+        """
+        使用 plantuml.jar 生成图像文件
+        
+        Args:
+            plantuml_code: PlantUML 代码字符串
+            output_filename: 输出文件名（可选，默认自动生成）
+            java_path: Java 可执行文件路径（可选，默认使用系统 PATH 中的 java）
+            
+        Returns:
+            生成的图像文件路径
+            
+        Raises:
+            Exception: 当 PlantUML 生成失败时抛出异常
+        """
+        try:
+            # 确保输出目录存在
+            output_dir = Path("jpg_output")
+            output_dir.mkdir(exist_ok=True)
+            
+            # 生成输出文件名
+            if output_filename is None:
+                timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+                output_filename = f"plantuml_{timestamp}.jpg"
+            
+            # 确保文件名以 .jpg 结尾
+            if not output_filename.lower().endswith('.jpg'):
+                output_filename += '.jpg'
+            
+            output_path = output_dir / output_filename
+            
+            # 创建临时 PlantUML 文件
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.puml', delete=False, encoding='utf-8') as temp_file:
+                temp_file.write(plantuml_code)
+                temp_puml_path = temp_file.name
+            
+            try:
+                # 检查 plantuml.jar 是否存在
+                plantuml_jar_path = Path("plantuml.jar")
+                if not plantuml_jar_path.exists():
+                    raise FileNotFoundError("plantuml.jar 文件不存在，请确保文件在当前目录下")
+                
+                # 确定 Java 可执行文件路径
+                if java_path:
+                    java_executable = java_path
+                else:
+                    # 尝试常见的 Java 路径
+                    possible_java_paths = [
+                        "java",  # 系统 PATH 中的 java
+                        "jdk-25.0.1/bin/java",  # 用户提到的路径
+                        "jdk-25.0.1/bin/java.exe",  # Windows 版本
+                        os.path.expanduser("~/jdk-25.0.1/bin/java"),  # 用户目录下
+                        os.path.expanduser("~/jdk-25.0.1/bin/java.exe"),  # Windows 用户目录
+                    ]
+                    
+                    java_executable = None
+                    for java_cmd in possible_java_paths:
+                        try:
+                            # 测试 Java 命令是否可用
+                            result = subprocess.run([java_cmd, "-version"],
+                                                   capture_output=True,
+                                                   timeout=5)
+                            if result.returncode == 0:
+                                java_executable = java_cmd
+                                break
+                        except (subprocess.TimeoutExpired, FileNotFoundError, OSError):
+                            continue
+                    
+                    if not java_executable:
+                        raise FileNotFoundError("Java 未找到。请安装 Java 或使用 java_path 参数指定 Java 路径")
+                
+                # 构建 Java 命令
+                # 注意：PlantUML 默认生成 PNG，我们需要转换为 JPG
+                cmd = [
+                    java_executable, "-jar", str(plantuml_jar_path),
+                    "-tpng",  # 先生成 PNG，然后转换为 JPG
+                    "-o", str(output_dir.absolute()),
+                    temp_puml_path
+                ]
+                
+                # 执行 PlantUML 命令
+                result = subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    text=True,
+                    timeout=30  # 30秒超时
+                )
+                
+                if result.returncode != 0:
+                    error_msg = f"PlantUML 执行失败 (返回码: {result.returncode})"
+                    if result.stderr:
+                        error_msg += f"\n错误信息: {result.stderr}"
+                    if result.stdout:
+                        error_msg += f"\n输出信息: {result.stdout}"
+                    raise Exception(error_msg)
+                
+                # PlantUML 默认会根据输入文件名生成输出文件
+                # 例如：temp_xxx.puml -> temp_xxx.png
+                temp_name = Path(temp_puml_path).stem
+                generated_png_file = output_dir / f"{temp_name}.png"
+                
+                # 检查生成的 PNG 文件是否存在
+                if not generated_png_file.exists():
+                    raise Exception(f"PlantUML 图像生成失败：未找到输出文件 {generated_png_file}")
+                
+                # 将 PNG 转换为 JPG
+                from PIL import Image
+                with Image.open(generated_png_file) as img:
+                    # 转换为 RGB 模式（JPG 不支持透明度）
+                    if img.mode in ('RGBA', 'LA', 'P'):
+                        # 创建白色背景
+                        background = Image.new('RGB', img.size, (255, 255, 255))
+                        if img.mode == 'P':
+                            img = img.convert('RGBA')
+                        background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+                        img = background
+                    elif img.mode != 'RGB':
+                        img = img.convert('RGB')
+                    
+                    # 保存为 JPG
+                    img.save(output_path, 'JPEG', quality=90)
+                
+                # 删除临时 PNG 文件
+                if generated_png_file.exists():
+                    generated_png_file.unlink()
+                
+                return str(output_path.absolute())
+                
+            finally:
+                # 清理临时文件
+                if os.path.exists(temp_puml_path):
+                    os.unlink(temp_puml_path)
+                    
+        except subprocess.TimeoutExpired:
+            raise Exception("PlantUML 执行超时（超过30秒）")
+        except FileNotFoundError as e:
+            if "java" in str(e).lower():
+                raise Exception("Java 未找到。请安装 Java 或使用 java_path 参数指定 Java 路径")
+            else:
+                raise Exception(f"文件未找到: {str(e)}")
+        except Exception as e:
+            raise Exception(f"生成 PlantUML 图像失败: {str(e)}")
 
 
 def parse_uml_file(file_path: str, openai_api_key: str = None, openai_base_url: str = None) -> Dict[str, Any]:
