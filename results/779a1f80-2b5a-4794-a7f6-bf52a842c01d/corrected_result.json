@@ -1,0 +1,246 @@
+{
+  "timestamp": "2025-11-06 17:10:07",
+  "original_image_path": "uploads\\779a1f80-2b5a-4794-a7f6-bf52a842c01d\\a5f8fa8b7b31ca53147107b54098f17f.png",
+  "original_uml": {
+    "source_type": "image",
+    "file_path": "uploads\\779a1f80-2b5a-4794-a7f6-bf52a842c01d\\a5f8fa8b7b31ca53147107b54098f17f.png",
+    "uml_structure": {
+      "diagram_type": "类图",
+      "elements": [
+        {
+          "type": "class",
+          "name": "管理员",
+          "attributes": [
+            "工号: string",
+            "姓名: string"
+          ],
+          "methods": [
+            "审核打卡异常()",
+            "设置运动规则()",
+            "处理违规行为()"
+          ],
+          "stereotypes": []
+        },
+        {
+          "type": "class",
+          "name": "用户",
+          "attributes": [
+            "用户id: string",
+            "姓名: string",
+            "密码: string"
+          ],
+          "methods": [
+            "登录()",
+            "注销()"
+          ],
+          "stereotypes": []
+        },
+        {
+          "type": "class",
+          "name": "学生",
+          "attributes": [
+            "学号: string",
+            "姓名: string",
+            "健康数据"
+          ],
+          "methods": [
+            "打卡()",
+            "查看健康报告()",
+            "申诉打卡异常()",
+            "暂停跑步()",
+            "查看运动次数()"
+          ],
+          "stereotypes": []
+        },
+        {
+          "type": "class",
+          "name": "健康分析",
+          "attributes": [
+            "运动数据: 运动数据",
+            "心率: float",
+            "建议: string"
+          ],
+          "methods": [
+            "生成健康报告()"
+          ],
+          "stereotypes": []
+        },
+        {
+          "type": "class",
+          "name": "运动数据",
+          "attributes": [
+            "时间: date",
+            "距离: float",
+            "配速: float",
+            "是否有效: boolean",
+            "消耗卡路里: float"
+          ],
+          "methods": [
+            "获取数据()",
+            "保持数据()"
+          ],
+          "stereotypes": []
+        },
+        {
+          "type": "class",
+          "name": "人脸识别",
+          "attributes": [
+            "人脸信息: string"
+          ],
+          "methods": [
+            "执行识别()"
+          ],
+          "stereotypes": []
+        },
+        {
+          "type": "class",
+          "name": "GPS",
+          "attributes": [
+            "定位信息: string"
+          ],
+          "methods": [
+            "获取定位()",
+            "开始计时()"
+          ],
+          "stereotypes": []
+        },
+        {
+          "type": "class",
+          "name": "异常申诉",
+          "attributes": [
+            "学号: string",
+            "申诉原因: string",
+            "处理状态: string",
+            "处理结果"
+          ],
+          "methods": [
+            "提交申诉()",
+            "更新处理状态()",
+            "提交处理结果()"
+          ],
+          "stereotypes": []
+        },
+        {
+          "type": "class",
+          "name": "运动规则",
+          "attributes": [
+            "学期最低跑步次数: int",
+            "学期最低跑步次数: int",
+            "男生配速上限: time",
+            "女生配速上限: time",
+            "晨跑开始时间: time",
+            "晨跑结束时间: time",
+            "跑步开始时间: time",
+            "跑步结束时间: time",
+            "电子围栏区间: memo"
+          ],
+          "methods": [
+            "查询规则()",
+            "更改规则()"
+          ],
+          "stereotypes": []
+        }
+      ],
+      "relationships": [
+        {
+          "type": "inheritance",
+          "source": "管理员",
+          "target": "用户",
+          "multiplicity": "",
+          "label": "继承"
+        },
+        {
+          "type": "inheritance",
+          "source": "学生",
+          "target": "用户",
+          "multiplicity": "",
+          "label": "继承"
+        },
+        {
+          "type": "aggregation",
+          "source": "健康分析",
+          "target": "运动数据",
+          "multiplicity": "1 0..*",
+          "label": "聚合"
+        },
+        {
+          "type": "dependency",
+          "source": "管理员",
+          "target": "打卡异常",
+          "multiplicity": "",
+          "label": "依赖"
+        },
+        {
+          "type": "dependency",
+          "source": "学生",
+          "target": "健康分析",
+          "multiplicity": "",
+          "label": "依赖"
+        },
+        {
+          "type": "dependency",
+          "source": "学生",
+          "target": "运动数据",
+          "multiplicity": "1",
+          "label": "依赖"
+        },
+        {
+          "type": "dependency",
+          "source": "管理员",
+          "target": "运动规则",
+          "multiplicity": "0..*",
+          "label": "依赖"
+        },
+        {
+          "type": "dependency",
+          "source": "运动数据",
+          "target": "异常申诉",
+          "multiplicity": "",
+          "label": "依赖"
+        },
+        {
+          "type": "association",
+          "source": "运动数据",
+          "target": "GPS",
+          "multiplicity": "1 1",
+          "label": ""
+        },
+        {
+          "type": "association",
+          "source": "运动数据",
+          "target": "人脸识别",
+          "multiplicity": "1 1",
+          "label": ""
+        },
+        {
+          "type": "dependency",
+          "source": "异常申诉",
+          "target": "运动数据",
+          "multiplicity": "",
+          "label": "依赖"
+        }
+      ],
+      "notes": []
+    },
+    "raw_gpt_response": "{\n  \"diagram_type\": \"类图\",\n  \"elements\": [\n    {\n      \"type\": \"class\",\n      \"name\": \"管理员\",\n      \"attributes\": [\n        \"工号: string\",\n        \"姓名: string\"\n      ],\n      \"methods\": [\n        \"审核打卡异常()\",\n        \"设置运动规则()\",\n        \"处理违规行为()\"\n      ],\n      \"stereotypes\": []\n    },\n    {\n      \"type\": \"class\",\n      \"name\": \"用户\",\n      \"attributes\": [\n        \"用户id: string\",\n        \"姓名: string\",\n        \"密码: string\"\n      ],\n      \"methods\": [\n        \"登录()\",\n        \"注销()\"\n      ],\n      \"stereotypes\": []\n    },\n    {\n      \"type\": \"class\",\n      \"name\": \"学生\",\n      \"attributes\": [\n        \"学号: string\",\n        \"姓名: string\",\n        \"健康数据\"\n      ],\n      \"methods\": [\n        \"打卡()\",\n        \"查看健康报告()\",\n        \"申诉打卡异常()\",\n        \"暂停跑步()\",\n        \"查看运动次数()\"\n      ],\n      \"stereotypes\": []\n    },\n    {\n      \"type\": \"class\",\n      \"name\": \"健康分析\",\n      \"attributes\": [\n        \"运动数据: 运动数据\",\n        \"心率: float\",\n        \"建议: string\"\n      ],\n      \"methods\": [\n        \"生成健康报告()\"\n      ],\n      \"stereotypes\": []\n    },\n    {\n      \"type\": \"class\",\n      \"name\": \"运动数据\",\n      \"attributes\": [\n        \"时间: date\",\n        \"距离: float\",\n        \"配速: float\",\n        \"是否有效: boolean\",\n        \"消耗卡路里: float\"\n      ],\n      \"methods\": [\n        \"获取数据()\",\n        \"保持数据()\"\n      ],\n      \"stereotypes\": []\n    },\n    {\n      \"type\": \"class\",\n      \"name\": \"人脸识别\",\n      \"attributes\": [\n        \"人脸信息: string\"\n      ],\n      \"methods\": [\n        \"执行识别()\"\n      ],\n      \"stereotypes\": []\n    },\n    {\n      \"type\": \"class\",\n      \"name\": \"GPS\",\n      \"attributes\": [\n        \"定位信息: string\"\n      ],\n      \"methods\": [\n        \"获取定位()\",\n        \"开始计时()\"\n      ],\n      \"stereotypes\": []\n    },\n    {\n      \"type\": \"class\",\n      \"name\": \"异常申诉\",\n      \"attributes\": [\n        \"学号: string\",\n        \"申诉原因: string\",\n        \"处理状态: string\",\n        \"处理结果\"\n      ],\n      \"methods\": [\n        \"提交申诉()\",\n        \"更新处理状态()\",\n        \"提交处理结果()\"\n      ],\n      \"stereotypes\": []\n    },\n    {\n      \"type\": \"class\",\n      \"name\": \"运动规则\",\n      \"attributes\": [\n        \"学期最低跑步次数: int\",\n        \"学期最低跑步次数: int\",\n        \"男生配速上限: time\",\n        \"女生配速上限: time\",\n        \"晨跑开始时间: time\",\n        \"晨跑结束时间: time\",\n        \"跑步开始时间: time\",\n        \"跑步结束时间: time\",\n        \"电子围栏区间: memo\"\n      ],\n      \"methods\": [\n        \"查询规则()\",\n        \"更改规则()\"\n      ],\n      \"stereotypes\": []\n    }\n  ],\n  \"relationships\": [\n    {\n      \"type\": \"inheritance\",\n      \"source\": \"管理员\",\n      \"target\": \"用户\",\n      \"multiplicity\": \"\",\n      \"label\": \"继承\"\n    },\n    {\n      \"type\": \"inheritance\",\n      \"source\": \"学生\",\n      \"target\": \"用户\",\n      \"multiplicity\": \"\",\n      \"label\": \"继承\"\n    },\n    {\n      \"type\": \"aggregation\",\n      \"source\": \"健康分析\",\n      \"target\": \"运动数据\",\n      \"multiplicity\": \"1 0..*\",\n      \"label\": \"聚合\"\n    },\n    {\n      \"type\": \"dependency\",\n      \"source\": \"管理员\",\n      \"target\": \"打卡异常\",\n      \"multiplicity\": \"\",\n      \"label\": \"依赖\"\n    },\n    {\n      \"type\": \"dependency\",\n      \"source\": \"学生\",\n      \"target\": \"健康分析\",\n      \"multiplicity\": \"\",\n      \"label\": \"依赖\"\n    },\n    {\n      \"type\": \"dependency\",\n      \"source\": \"学生\",\n      \"target\": \"运动数据\",\n      \"multiplicity\": \"1\",\n      \"label\": \"依赖\"\n    },\n    {\n      \"type\": \"dependency\",\n      \"source\": \"管理员\",\n      \"target\": \"运动规则\",\n      \"multiplicity\": \"0..*\",\n      \"label\": \"依赖\"\n    },\n    {\n      \"type\": \"dependency\",\n      \"source\": \"运动数据\",\n      \"target\": \"异常申诉\",\n      \"multiplicity\": \"\",\n      \"label\": \"依赖\"\n    },\n    {\n      \"type\": \"association\",\n      \"source\": \"运动数据\",\n      \"target\": \"GPS\",\n      \"multiplicity\": \"1 1\",\n      \"label\": \"\"\n    },\n    {\n      \"type\": \"association\",\n      \"source\": \"运动数据\",\n      \"target\": \"人脸识别\",\n      \"multiplicity\": \"1 1\",\n      \"label\": \"\"\n    },\n    {\n      \"type\": \"dependency\",\n      \"source\": \"异常申诉\",\n      \"target\": \"运动数据\",\n      \"multiplicity\": \"\",\n      \"label\": \"依赖\"\n    }\n  ],\n  \"notes\": []\n}"
+  },
+  "original_plantuml": "@startuml\nskinparam defaultFontName 微软雅黑\ntitle 类图\n\nclass \"管理员\" {\n  工号: string\n  姓名: string\n  --\n  审核打卡异常()\n  设置运动规则()\n  处理违规行为()\n}\n\nclass \"用户\" {\n  用户id: string\n  姓名: string\n  密码: string\n  --\n  登录()\n  注销()\n}\n\nclass \"学生\" {\n  学号: string\n  姓名: string\n  健康数据\n  --\n  打卡()\n  查看健康报告()\n  申诉打卡异常()\n  暂停跑步()\n  查看运动次数()\n}\n\nclass \"健康分析\" {\n  运动数据: 运动数据\n  心率: float\n  建议: string\n  --\n  生成健康报告()\n}\n\nclass \"运动数据\" {\n  时间: date\n  距离: float\n  配速: float\n  是否有效: boolean\n  消耗卡路里: float\n  --\n  获取数据()\n  保持数据()\n}\n\nclass \"人脸识别\" {\n  人脸信息: string\n  --\n  执行识别()\n}\n\nclass GPS {\n  定位信息: string\n  --\n  获取定位()\n  开始计时()\n}\n\nclass \"异常申诉\" {\n  学号: string\n  申诉原因: string\n  处理状态: string\n  处理结果\n  --\n  提交申诉()\n  更新处理状态()\n  提交处理结果()\n}\n\nclass \"运动规则\" {\n  学期最低跑步次数: int\n  学期最低跑步次数: int\n  男生配速上限: time\n  女生配速上限: time\n  晨跑开始时间: time\n  晨跑结束时间: time\n  跑步开始时间: time\n  跑步结束时间: time\n  电子围栏区间: memo\n  --\n  查询规则()\n  更改规则()\n}\n\n\"管理员\" <|-- \"用户\" : 继承\n\"学生\" <|-- \"用户\" : 继承\n\"健康分析\" \"1\" o-- \"1 0..*\" \"运动数据\" : 聚合\n\"管理员\" ..> \"打卡异常\" : 依赖\n\"学生\" ..> \"健康分析\" : 依赖\n\"学生\" ..> \"运动数据\" : 依赖\n\"管理员\" ..> \"运动规则\" : 依赖\n\"运动数据\" ..> \"异常申诉\" : 依赖\n\"运动数据\" \"1\" --> \"1 1\" GPS\n\"运动数据\" \"1\" --> \"1 1\" \"人脸识别\"\n\"异常申诉\" ..> \"运动数据\" : 依赖\n@enduml",
+  "error_analysis": {
+    "errors": [],
+    "summary": {
+      "total_errors": 0,
+      "severity_level": "解析失败"
+    },
+    "parse_error": "XML解析失败: mismatched tag: line 31, column 83",
+    "raw_content": "<uml_analysis>\n  <errors>\n    <error>\n      <region>\n        <description>类“管理员”与“运动规则”之间的依赖线附近</description>\n        <coordinates>\n          <x1>10</x1>\n          <y1>35</y1>\n          <x2>30</x2>\n          <y2>50</y2>\n        </coordinates>\n      </region>\n      <type>语义错误</type>\n      <element>依赖关系</element>\n      <error_description>“管理员”类通过依赖“运动规则”类，但管理员类中无明确方法表明其依赖关系，仅有“设置运动规则()”而非具体接口。依赖关系应明确方法与功能对应，否则缺乏语义明确性。</error_description>\n      <suggestion>建议在“管理员”类中添加具体操作方法说明对“运动规则”的使用细节，或调整依赖箭头以准确反映实际使用关系。</suggestion>\n    </error>\n    <error>\n      <region>\n        <description>类“健康分析”中属性“运动数据: 运动数据”部分</description>\n        <coordinates>\n          <x1>45</x1>\n          <y1>40</y1>\n          <x2>60</x2>\n          <y2>55</y2>\n        </coordinates>\n      </region>\n      <type>设计规范违反</type>\n      <element>属性</element>\n      <error_description>类“健康分析”中属性“运动数据”类型为“运动数据”且加了“+”，表示public，但属性标注了复杂对象且未明确集合关系，且类间有聚合关系，易产生责任不清的问题。</error_description>\n      <suggestion>建议将“运动数据”属性改为私有（-），并通过方法访问，且若是一对多关系应使用集合类，如List<运动数据>，明确表示聚合关系。</suggestion>\n    </error>\n    <error>\n      <region>\n        <description>类“学生”与“健康分析”之间的依赖线附近</description>\n        <coordinates>\n          <x1>70</x1>\n          <y1>45</y1>\n          <x2>85</x2>\n          <y2>55</y2>\n        </coordinates>\n      </region>\n      <type>一致性错误</type>\n      <element>依赖关系</element>\n      <error_description>“学生”依赖“健康分析”，但“学生”类中已有“健康数据”属性，类型未明示且无方法调用“健康分析”，依赖不明确且重复，造成设计混乱。</error_description>\n      <suggestion>建议统一健康数据管理方式，若由“健康分析”负责，则“学生”中“健康数据”属性应明确为“健康分析”类型，否则去除依赖线或调整属性类型一致。</suggestion>\n    </error>\n    <error>\n      <region>\n        <description>类“运动数据”中属性“消耗卡路里”拼写</description>\n        <coordinates>\n          <x1>40</x1>\n          <y1>55</y1>\n          <x2>60</x2>\n          <y2>60</y2>\n        </coordinates>\n      </region>\n      <type>语法错误</type>\n      <element>属性</element>\n      <error_description>“运动数据”类中属性“消耗卡路里”命名不规范，混合中英文，“消耗卡路里里”表达重复，可能是“消耗卡路里”的拼写错误或多余“里”字。</error_description>\n      <suggestion>应修正属性名为“消耗卡路里”或统一为英文命名“caloriesConsumed”等，避免拼写冗余。</suggestion>\n    </error>\n    <error>\n      <region>\n        <description>类“学习规则”与“管理员”之间的多重关系表示</description>\n        <coordinates>\n          <x1>10</x1>\n          <y1>55</y1>\n          <x2>30</x2>\n          <y2>70</y2>\n        </coordinates>\n      </region>\n      <type>语法错误</type>\n      <element>关联多重性</element>\n      <error_description>“运动规则”与“管理员”之间标注多重性为“0..*”在管理员端，“1”在运动规则端，但实际意义不清，且管理员有且只有一份运动规则不合理。</error_description>\n      <suggestion>根据实际业务，调整多重性表达。如管理员管理多条运动规则则运动规则端应为“0..*”，管理员端“1”，使语义清晰。</suggestion>\n    </error>\n    <error>\n      <region>\n        <description>类“用户”“管理员”“学生”之间的继承关系描述</description>\n        <coordinates>\n          <x1>50</x1>\n          <y1>10</y1>\n          <x2>80</x2>\n          <y2>30</y2>\n        </coordinates>\n      </region>\n      <type>设计规范违反</type>\n      <element>继承关系</element>\n      <error_description>“管理员”和“学生”都继承自“用户”，但“管理员”继承箭头方向指向“用户”，同时又与“管理员”类有相似属性无法归类的设计缺陷。继承关系标注“+继承”文字不规范，应使用统一UML继承箭头而无需文字。</error_description>\n      <suggestion>删除文字“+继承”，使用箭头清晰表达继承关系；调整属性在父类“用户”中进行通用抽象，子类只保留差异化属性和方法。</suggestion>\n    </error>\n  </errors>\n  <summary>\n    <total_errors>6</total_errors>\n    <severity_level>中等</severity_level>\n  </summary>\n</uml_analysis>",
+    "raw_xml_response": "<uml_analysis>\n  <errors>\n    <error>\n      <region>\n        <description>类“管理员”与“运动规则”之间的依赖线附近</description>\n        <coordinates>\n          <x1>10</x1>\n          <y1>35</y1>\n          <x2>30</x2>\n          <y2>50</y2>\n        </coordinates>\n      </region>\n      <type>语义错误</type>\n      <element>依赖关系</element>\n      <error_description>“管理员”类通过依赖“运动规则”类，但管理员类中无明确方法表明其依赖关系，仅有“设置运动规则()”而非具体接口。依赖关系应明确方法与功能对应，否则缺乏语义明确性。</error_description>\n      <suggestion>建议在“管理员”类中添加具体操作方法说明对“运动规则”的使用细节，或调整依赖箭头以准确反映实际使用关系。</suggestion>\n    </error>\n    <error>\n      <region>\n        <description>类“健康分析”中属性“运动数据: 运动数据”部分</description>\n        <coordinates>\n          <x1>45</x1>\n          <y1>40</y1>\n          <x2>60</x2>\n          <y2>55</y2>\n        </coordinates>\n      </region>\n      <type>设计规范违反</type>\n      <element>属性</element>\n      <error_description>类“健康分析”中属性“运动数据”类型为“运动数据”且加了“+”，表示public，但属性标注了复杂对象且未明确集合关系，且类间有聚合关系，易产生责任不清的问题。</error_description>\n      <suggestion>建议将“运动数据”属性改为私有（-），并通过方法访问，且若是一对多关系应使用集合类，如List<运动数据>，明确表示聚合关系。</suggestion>\n    </error>\n    <error>\n      <region>\n        <description>类“学生”与“健康分析”之间的依赖线附近</description>\n        <coordinates>\n          <x1>70</x1>\n          <y1>45</y1>\n          <x2>85</x2>\n          <y2>55</y2>\n        </coordinates>\n      </region>\n      <type>一致性错误</type>\n      <element>依赖关系</element>\n      <error_description>“学生”依赖“健康分析”，但“学生”类中已有“健康数据”属性，类型未明示且无方法调用“健康分析”，依赖不明确且重复，造成设计混乱。</error_description>\n      <suggestion>建议统一健康数据管理方式，若由“健康分析”负责，则“学生”中“健康数据”属性应明确为“健康分析”类型，否则去除依赖线或调整属性类型一致。</suggestion>\n    </error>\n    <error>\n      <region>\n        <description>类“运动数据”中属性“消耗卡路里”拼写</description>\n        <coordinates>\n          <x1>40</x1>\n          <y1>55</y1>\n          <x2>60</x2>\n          <y2>60</y2>\n        </coordinates>\n      </region>\n      <type>语法错误</type>\n      <element>属性</element>\n      <error_description>“运动数据”类中属性“消耗卡路里”命名不规范，混合中英文，“消耗卡路里里”表达重复，可能是“消耗卡路里”的拼写错误或多余“里”字。</error_description>\n      <suggestion>应修正属性名为“消耗卡路里”或统一为英文命名“caloriesConsumed”等，避免拼写冗余。</suggestion>\n    </error>\n    <error>\n      <region>\n        <description>类“学习规则”与“管理员”之间的多重关系表示</description>\n        <coordinates>\n          <x1>10</x1>\n          <y1>55</y1>\n          <x2>30</x2>\n          <y2>70</y2>\n        </coordinates>\n      </region>\n      <type>语法错误</type>\n      <element>关联多重性</element>\n      <error_description>“运动规则”与“管理员”之间标注多重性为“0..*”在管理员端，“1”在运动规则端，但实际意义不清，且管理员有且只有一份运动规则不合理。</error_description>\n      <suggestion>根据实际业务，调整多重性表达。如管理员管理多条运动规则则运动规则端应为“0..*”，管理员端“1”，使语义清晰。</suggestion>\n    </error>\n    <error>\n      <region>\n        <description>类“用户”“管理员”“学生”之间的继承关系描述</description>\n        <coordinates>\n          <x1>50</x1>\n          <y1>10</y1>\n          <x2>80</x2>\n          <y2>30</y2>\n        </coordinates>\n      </region>\n      <type>设计规范违反</type>\n      <element>继承关系</element>\n      <error_description>“管理员”和“学生”都继承自“用户”，但“管理员”继承箭头方向指向“用户”，同时又与“管理员”类有相似属性无法归类的设计缺陷。继承关系标注“+继承”文字不规范，应使用统一UML继承箭头而无需文字。</error_description>\n      <suggestion>删除文字“+继承”，使用箭头清晰表达继承关系；调整属性在父类“用户”中进行通用抽象，子类只保留差异化属性和方法。</suggestion>\n    </error>\n  </errors>\n  <summary>\n    <total_errors>6</total_errors>\n    <severity_level>中等</severity_level>\n  </summary>\n</uml_analysis>"
+  },
+  "corrected_plantuml": "@startuml\nskinparam defaultFontName 微软雅黑\ntitle 类图\n\n' 父类，抽象通用属性\nclass \"用户\" {\n  - 用户id: string\n  - 姓名: string\n  - 密码: string\n  --\n  + 登录()\n  + 注销()\n}\n\n' 管理员继承用户，删去重复姓名属性\nclass \"管理员\" {\n  - 工号: string\n  --\n  + 审核打卡异常()\n  + 设置运动规则()\n  + 处理违规行为()\n  + 管理运动规则(规则: 运动规则) ' 新增方法，明确管理员通过此方法使用运动规则\n}\n\n' 学生继承用户，姓名归用户，健康数据类型调整为健康分析引用\nclass \"学生\" {\n  - 学号: string\n  - 健康分析数据: 健康分析 ' 将健康数据属性明确为健康分析类型\n  --\n  + 打卡()\n  + 查看健康报告()\n  + 申诉打卡异常()\n  + 暂停跑步()\n  + 查看运动次数()\n}\n\nclass \"健康分析\" {\n  - 运动数据列表: List<运动数据> ' 将属性设为私有，并明确为集合，避免模糊责任\n  - 心率: float\n  - 建议: string\n  --\n  + 生成健康报告()\n  + 获取运动数据(): List<运动数据> ' 通过方法访问运动数据\n  + 添加运动数据(数据: 运动数据)\n}\n\nclass \"运动数据\" {\n  - 时间: date\n  - 距离: float\n  - 配速: float\n  - 是否有效: boolean\n  - 消耗卡路里: float ' 纠正属性名，移除多余“里”\n  --\n  + 获取数据()\n  + 保持数据()\n}\n\nclass \"人脸识别\" {\n  - 人脸信息: string\n  --\n  + 执行识别()\n}\n\nclass GPS {\n  - 定位信息: string\n  --\n  + 获取定位()\n  + 开始计时()\n}\n\nclass \"异常申诉\" {\n  - 学号: string\n  - 申诉原因: string\n  - 处理状态: string\n  - 处理结果: string ' 明确数据类型\n  --\n  + 提交申诉()\n  + 更新处理状态()\n  + 提交处理结果()\n}\n\nclass \"运动规则\" {\n  - 学期最低跑步次数: int ' 删除重复属性\n  - 男生配速上限: time\n  - 女生配速上限: time\n  - 晨跑开始时间: time\n  - 晨跑结束时间: time\n  - 跑步开始时间: time\n  - 跑步结束时间: time\n  - 电子围栏区间: memo\n  --\n  + 查询规则()\n  + 更改规则()\n}\n\n' 继承关系，不使用“继承”文字，箭头朝向父类\n\"管理员\" --|> \"用户\"\n\"学生\" --|> \"用户\"\n\n' 聚合关系，1个健康分析对应多个运动数据\n\"健康分析\" \"1\" o-- \"0..*\" \"运动数据\" : 聚合\n\n' 删除管理员对运动规则的简单依赖，改用关联+管理方法\n\"管理员\" \"1\" --> \"0..*\" \"运动规则\" : 管理\n\n' 删除学生与健康分析的依赖线，因学生持有健康分析实例\n\n' 依赖关系保持合理性\n\"管理员\" ..> \"异常申诉\" : 依赖\n\"学生\" ..> \"异常申诉\" : 依赖\n\"学生\" ..> \"运动数据\" : 依赖\n\"运动数据\" ..> \"异常申诉\" : 依赖\n\n' 运动数据关联GPS和人脸识别，使用组合或关联\n\"运动数据\" \"1\" --> \"1\" GPS\n\"运动数据\" \"1\" --> \"1\" \"人脸识别\"\n\n@enduml",
+  "modification_notes": "修改说明：\n- 修改1：将用户中的重复“姓名”属性抽象到父类“用户”中，管理员和学生继承用户删除重复属性。\n- 修改2：删除“管理员”与“运动规则”间简单依赖箭头，改为“管理员”与“运动规则”的明确关联，并在“管理员”中添加管理运动规则的方法，明确依赖意图。\n- 修改3：将“健康分析”中运动数据属性改为私有集合List<运动数据>，并添加访问方法，明确聚合关系，防止责任不清。\n- 修改4：将“学生”中“健康数据”改名为“健康分析数据”，类型明确为“健康分析”，删除“学生”对“健康分析”的依赖线，避免重复和混乱。\n- 修改5：修正“运动数据”中属性“消耗卡路里”的拼写错误，移除多余文字，属性命名统一。\n- 修改6：调整继承关系箭头，去掉文字说明，箭头指向父类以符号规范。\n- 修改7：“管理员”与“运动规则”之间调整关联多重性，管理员端为1，运动规则端为0..*，更符合业务含义。\n- 修改8：明确“异常申诉”中“处理结果”属性的数据类型为string。\n- 修改9：保持合理的依赖和关联线，删除设计不明确或重复的依赖线，保证整体设计合理清晰。",
+  "raw_gpt_response": "```plantuml\n@startuml\nskinparam defaultFontName 微软雅黑\ntitle 类图\n\n' 父类，抽象通用属性\nclass \"用户\" {\n  - 用户id: string\n  - 姓名: string\n  - 密码: string\n  --\n  + 登录()\n  + 注销()\n}\n\n' 管理员继承用户，删去重复姓名属性\nclass \"管理员\" {\n  - 工号: string\n  --\n  + 审核打卡异常()\n  + 设置运动规则()\n  + 处理违规行为()\n  + 管理运动规则(规则: 运动规则) ' 新增方法，明确管理员通过此方法使用运动规则\n}\n\n' 学生继承用户，姓名归用户，健康数据类型调整为健康分析引用\nclass \"学生\" {\n  - 学号: string\n  - 健康分析数据: 健康分析 ' 将健康数据属性明确为健康分析类型\n  --\n  + 打卡()\n  + 查看健康报告()\n  + 申诉打卡异常()\n  + 暂停跑步()\n  + 查看运动次数()\n}\n\nclass \"健康分析\" {\n  - 运动数据列表: List<运动数据> ' 将属性设为私有，并明确为集合，避免模糊责任\n  - 心率: float\n  - 建议: string\n  --\n  + 生成健康报告()\n  + 获取运动数据(): List<运动数据> ' 通过方法访问运动数据\n  + 添加运动数据(数据: 运动数据)\n}\n\nclass \"运动数据\" {\n  - 时间: date\n  - 距离: float\n  - 配速: float\n  - 是否有效: boolean\n  - 消耗卡路里: float ' 纠正属性名，移除多余“里”\n  --\n  + 获取数据()\n  + 保持数据()\n}\n\nclass \"人脸识别\" {\n  - 人脸信息: string\n  --\n  + 执行识别()\n}\n\nclass GPS {\n  - 定位信息: string\n  --\n  + 获取定位()\n  + 开始计时()\n}\n\nclass \"异常申诉\" {\n  - 学号: string\n  - 申诉原因: string\n  - 处理状态: string\n  - 处理结果: string ' 明确数据类型\n  --\n  + 提交申诉()\n  + 更新处理状态()\n  + 提交处理结果()\n}\n\nclass \"运动规则\" {\n  - 学期最低跑步次数: int ' 删除重复属性\n  - 男生配速上限: time\n  - 女生配速上限: time\n  - 晨跑开始时间: time\n  - 晨跑结束时间: time\n  - 跑步开始时间: time\n  - 跑步结束时间: time\n  - 电子围栏区间: memo\n  --\n  + 查询规则()\n  + 更改规则()\n}\n\n' 继承关系，不使用“继承”文字，箭头朝向父类\n\"管理员\" --|> \"用户\"\n\"学生\" --|> \"用户\"\n\n' 聚合关系，1个健康分析对应多个运动数据\n\"健康分析\" \"1\" o-- \"0..*\" \"运动数据\" : 聚合\n\n' 删除管理员对运动规则的简单依赖，改用关联+管理方法\n\"管理员\" \"1\" --> \"0..*\" \"运动规则\" : 管理\n\n' 删除学生与健康分析的依赖线，因学生持有健康分析实例\n\n' 依赖关系保持合理性\n\"管理员\" ..> \"异常申诉\" : 依赖\n\"学生\" ..> \"异常申诉\" : 依赖\n\"学生\" ..> \"运动数据\" : 依赖\n\"运动数据\" ..> \"异常申诉\" : 依赖\n\n' 运动数据关联GPS和人脸识别，使用组合或关联\n\"运动数据\" \"1\" --> \"1\" GPS\n\"运动数据\" \"1\" --> \"1\" \"人脸识别\"\n\n@enduml\n```\n\n修改说明：\n- 修改1：将用户中的重复“姓名”属性抽象到父类“用户”中，管理员和学生继承用户删除重复属性。\n- 修改2：删除“管理员”与“运动规则”间简单依赖箭头，改为“管理员”与“运动规则”的明确关联，并在“管理员”中添加管理运动规则的方法，明确依赖意图。\n- 修改3：将“健康分析”中运动数据属性改为私有集合List<运动数据>，并添加访问方法，明确聚合关系，防止责任不清。\n- 修改4：将“学生”中“健康数据”改名为“健康分析数据”，类型明确为“健康分析”，删除“学生”对“健康分析”的依赖线，避免重复和混乱。\n- 修改5：修正“运动数据”中属性“消耗卡路里”的拼写错误，移除多余文字，属性命名统一。\n- 修改6：调整继承关系箭头，去掉文字说明，箭头指向父类以符号规范。\n- 修改7：“管理员”与“运动规则”之间调整关联多重性，管理员端为1，运动规则端为0..*，更符合业务含义。\n- 修改8：明确“异常申诉”中“处理结果”属性的数据类型为string。\n- 修改9：保持合理的依赖和关联线，删除设计不明确或重复的依赖线，保证整体设计合理清晰。",
+  "summary": {
+    "total_errors_found": 0,
+    "severity_level": "解析失败",
+    "corrections_applied": 9
+  }
+}

@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UML智能纠错系统</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Prism.js for code highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #06b6d4;
+            --light-gray: #f8fafc;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            background-color: var(--light-gray);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .main-container {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* 文件上传区域 */
+        .upload-zone {
+            border: 3px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            background: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary-color);
+            background-color: #f0f7ff;
+        }
+
+        .upload-zone.drag-over {
+            border-color: var(--success-color);
+            background-color: #f0fdf4;
+            transform: scale(1.02);
+        }
+
+        .upload-zone.uploading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .upload-hint {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* 任务状态面板 */
+        .task-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .task-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-processing {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-failed {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .progress-container {
+            margin: 1rem 0;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #e2e8f0;
+        }
+
+        .progress-bar {
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .processing-steps {
+            margin-top: 1rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .step-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-size: 0.7rem;
+        }
+
+        .step-completed {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .step-current {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .step-pending {
+            background-color: var(--border-color);
+            color: #64748b;
+        }
+
+        /* 错误分析结果 */
+        .error-analysis {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .error-summary {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: var(--light-gray);
+            border-radius: 8px;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .summary-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+        }
+
+        .error-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .error-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .error-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .error-syntax {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .error-semantic {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .error-consistency {
+            border-left: 4px solid #eab308;
+        }
+
+        .error-design {
+            border-left: 4px solid #ec4899;
+        }
+
+        .error-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .error-type {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .error-element {
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .error-description {
+            color: #374151;
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+
+        .error-suggestion {
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+            color: #0c4a6e;
+        }
+
+        .error-suggestion::before {
+            content: "💡 ";
+            margin-right: 0.5rem;
+        }
+
+        /* 图像对比查看器 */
+        .image-viewer {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .image-tabs {
+            margin-bottom: 1.5rem;
+        }
+
+        .image-container {
+            position: relative;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .error-marker {
+            position: absolute;
+            border: 3px solid;
+            border-radius: 4px;
+            cursor: pointer;
+            pointer-events: all;
+        }
+
+        .error-marker.syntax {
+            border-color: var(--danger-color);
+        }
+
+        .error-marker.semantic {
+            border-color: var(--warning-color);
+        }
+
+        .error-marker.consistency {
+            border-color: #eab308;
+        }
+
+        .error-marker.design {
+            border-color: #ec4899;
+        }
+
+        .error-tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            max-width: 200px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        /* 修正建议面板 */
+        .correction-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .code-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .code-block {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background-color: #f8fafc;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .code-content {
+            padding: 1rem;
+            background-color: #fafafa;
+            overflow-x: auto;
+            max-height: 300px;
+        }
+
+        .modification-notes {
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .modification-notes h6 {
+            color: #0c4a6e;
+            margin-bottom: 0.75rem;
+        }
+
+        .modification-notes ul {
+            margin: 0;
+            padding-left: 1.25rem;
+        }
+
+        .modification-notes li {
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        /* 下载按钮 */
+        .download-section {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .download-btn i {
+            margin-right: 0.5rem;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* 任务历史管理 */
+        .history-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .history-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .task-history-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .task-history-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .task-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .task-filename {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .task-time {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-container {
+                margin-top: 1rem;
+                padding: 0 1rem;
+            }
+
+            .code-comparison {
+grid-template-columns: 1fr;
+            }
+
+            .download-section {
+                flex-direction: column;
+            }
+
+            .history-filters {
+                flex-direction: column;
+            }
+
+            .task-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+
+        /* 加载动画 */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 隐藏元素 */
+        .d-none {
+            display: none !important;
+        }
+
+        /* 自定义滚动条 */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-project-diagram me-2"></i>
+                UML智能纠错系统
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#upload-section">
+                            <i class="fas fa-upload me-1"></i>上传文件
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#results-section">
+                            <i class="fas fa-chart-line me-1"></i>分析结果
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#history-section">
+                            <i class="fas fa-history me-1"></i>历史记录
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <span class="nav-link" id="system-stats">
+                            <i class="fas fa-server me-1"></i>
+                            <span class="spinner d-none" id="stats-spinner"></span>
+                            
+                
+<span id="stats-text">加载中...</span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <div class="container main-container">
+        <div class="row">
+            <!-- 左侧：文件上传区域 -->
+            <div class="col-lg-4 col-md-12 mb-4">
+                <div id="upload-section">
+                    <h4 class="mb-3">
+                        <i class="fas fa-cloud-upload-alt me-2"></i>
+                        文件上传
+                    </h4>
+                    
+                    <!-- 上传区域 -->
+                    <div class="upload-zone" id="uploadZone">
+                        <input type="file" class="file-input" id="fileInput" accept=".mdj,.png,.jpg,.jpeg,.bmp,.gif,.tiff">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <div class="upload-text">拖拽文件到此处或点击选择</div>
+                            <div class="upload-hint">
+                                支持格式：StarUML (.mdj) 或图片 (.png, .jpg, .jpeg, .bmp, .gif, .tiff)
+                            </div>
+                        </div>
+                        
+                        <!-- 上传进度 -->
+                        <div class="upload-progress d-none" id="uploadProgress">
+                            <div class="progress mb-2">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                     role="progressbar" style="width: 0%" id="uploadProgressBar"></div>
+                            </div>
+                            <div class="text-center">
+                                <small class="text-muted" id="uploadStatus">准备上传...</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 文件信息 -->
+                    <div class="file-info d-none" id="fileInfo">
+                        <div class="card mt-3">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-file me-2"></i>
+                                    文件信息
+                                </h6>
+                                <div class="file-details">
+                                    <div class="row">
+                                        <div class="col-4"><strong>文件名：</strong></div>
+                                        <div class="col-8" id="fileName">-</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4"><strong>文件大小：</strong></div>
+                                        <div class="col-8" id="fileSize">-</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4"><strong>文件类型：</strong></div>
+                                        <div class="col-8" id="fileType">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 快速操作 -->
+                    <div class="quick-actions mt-3">
+                        <button class="btn btn-outline-primary btn-sm me-2" id="clearFileBtn" disabled>
+                            <i class="fas fa-times me-1"></i>清除文件
+                        </button>
+                        <button class="btn btn-primary btn-sm" id="submitTaskBtn" disabled>
+                            <i class="fas fa-play me-1"></i>开始分析
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：结果展示区域 -->
+            <div class="col-lg-8 col-md-12">
+                <div id="results-section">
+                    <!-- 欢迎信息 -->
+                    <div class="welcome-panel task-panel" id="welcomePanel">
+                        <div class="text-center">
+                            <i class="fas fa-rocket" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                            <h3>欢迎使用UML智能纠错系统</h3>
+                            <p class="text-muted mb-4">
+                                上传您的UML文件（StarUML .mdj格式或图片格式），系统将自动分析并标注错误，提供修正建议。
+                            </p>
+                            <div class="row text-center">
+                                <div class="col-md-4">
+                                    <i class="fas fa-upload text-primary mb-2" style="font-size: 2rem;"></i>
+                                    <h6>上传文件</h6>
+                                    <small class="text-muted">支持多种格式</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <i class="fas fa-search text-success mb-2" style="font-size: 2rem;"></i>
+                                    <h6>智能分析</h6>
+                                    <small class="text-muted">AI驱动的错误检测</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <i class="fas fa-download text-info mb-2" style="font-size: 2rem;"></i>
+                                    <h6>获取结果</h6>
+                                    <small class="text-muted">下载修正建议</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 任务状态面板 -->
+                    <div class="task-panel d-none" id="taskPanel">
+                        <div class="task-header">
+                            <h5>
+                                <i class="fas fa-tasks me-2"></i>
+                                任务状态
+                            </h5>
+                            <div class="task-actions">
+                                <span class="task-status" id="taskStatus">等待中</span>
+                                <button class="btn btn-outline-danger btn-sm ms-2" id="cancelTaskBtn">
+                                    <i class="fas fa-stop me-1"></i>取消
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="task-info">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>任务ID：</strong>
+                                    <span id="taskId" class="font-monospace">-</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>创建时间：</strong>
+                                    <span id="taskCreatedAt">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="progress-container">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>处理进度</span>
+                                <span id="progressPercent">0%</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: 0%" id="taskProgressBar"></div>
+                            </div>
+                        </div>
+
+                        <div class="processing-steps">
+                            <div class="step" id="step1">
+                                <div class="step-icon step-pending">1</div>
+                                <span>文件上传</span>
+                            </div>
+                            <div class="step" id="step2">
+                                <div class="step-icon step-pending">2</div>
+                                <span>解析UML结构</span>
+                            </div>
+                            <div class="step" id="step3">
+                                <div class="step-icon step-pending">3</div>
+                                <span>错误分析</span>
+                            </div>
+                            <div class="step" id="step4">
+                                <div class="step-icon step-pending">4</div>
+                                <span>生成标注图像</span>
+                            </div>
+                            <div class="step" id="step5">
+                                <div class="step-icon step-pending">5</div>
+                                <span>生成修正建议</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 错误分析结果 -->
+                    <div class="error-analysis d-none" id="errorAnalysis">
+                        <h5 class="mb-3">
+                            <i class="fas fa-bug me-2"></i>
+                            错误分析结果
+                        </h5>
+                        
+                        <div class="error-summary">
+                            <div class="summary-item">
+                                <div class="summary-number" id="totalErrors">0</div>
+                                <div class="summary-label">总错误数</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-number text-danger" id="syntaxErrors">0</div>
+                                <div class="summary-label">语法错误</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-number text-warning" id="semanticErrors">0</div>
+                                <div class="summary-label">语义错误</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-number text-info" id="severityLevel">-</div>
+                                <div class="summary-label">严重程度</div>
+                            </div>
+                        </div>
+
+                        <div class="error-list custom-scrollbar" id="errorList">
+                            <!-- 错误项将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+
+                    <!-- 图像对比查看器 -->
+                    <div class="image-viewer d-none" id="imageViewer">
+                        <h5 class="mb-3">
+                            <i class="fas fa-images me-2"></i>
+                            图像对比
+                        </h5>
+                        
+                        <ul class="nav nav-tabs image-tabs" id="imageTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="original-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#original-image" type="button" role="tab">
+                                    <i class="fas fa-image me-1"></i>原始图像
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="annotated-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#annotated-image" type="button" role="tab">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>错误标注
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="corrected-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#corrected-image" type="button" role="tab">
+                                    <i class="fas fa-check-circle me-1"></i>修正后
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content" id="imageTabContent">
+                            <div class="tab-pane fade show active" id="original-image" role="tabpanel">
+                                <div class="image-container">
+                                    <img id="originalImg" src="" alt="原始UML图像" style="display: none;">
+                                    <div class="text-center p-4 text-muted" id="originalPlaceholder">
+                                        <i class="fas fa-image" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                                        <p>原始图像将在这里显示</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="annotated-image" role="tabpanel">
+                                <div class="image-container">
+                                    <img id="annotatedImg" src="" alt="错误标注图像" style="display: none;">
+                                    <div class="image-overlay" id="errorOverlay"></div>
+                                    <div class="text-center p-4 text-muted" id="annotatedPlaceholder">
+                                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                                        <p>标注图像将在这里显示</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="corrected-image" role="tabpanel">
+                                <div class="image-container">
+                                    <img id="correctedImg" src="" alt="修正后图像" style="display: none;">
+                                    <div class="text-center p-4 text-muted" id="correctedPlaceholder">
+                                        <i class="fas fa-check-circle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                                        <p>修正后图像将在这里显示</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 修正建议面板 -->
+                    <div class="correction-panel d-none" id="correctionPanel">
+                        <h5 class="mb-3">
+                            <i class="fas fa-tools me-2"></i>
+                            修正建议
+                        </h5>
+                        
+                        <div class="modification-notes" id="modificationNotes">
+                            <h6><i class="fas fa-lightbulb me-2"></i>修改说明</h6>
+                            <ul id="modificationList">
+                                <!-- 修改说明将通过JavaScript动态生成 -->
+                            </ul>
+                        </div>
+
+                        <div class="code-comparison">
+                            <div class="code-block">
+                                <div class="code-header">
+                                    <i class="fas fa-code me-2"></i>原始代码
+                                </div>
+                                <div class="code-content">
+                                    <pre><code id="originalCode" class="language-plantuml">// 原始PlantUML代码将在这里显示</code></pre>
+                                </div>
+                            </div>
+                            <div class="code-block">
+                                <div class="code-header">
+                                    <i class="fas fa-check me-2"></i>修正后代码
+                                </div>
+                                <div class="code-content">
+                                    <pre><code id="
+correctedCode" class="language-plantuml">// 修正后PlantUML代码将在这里显示</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="download-section">
+                            <a href="#" class="download-btn btn btn-primary" id="downloadErrorAnalysis">
+                                <i class="fas fa-download"></i>错误分析报告
+                            </a>
+                            <a href="#" class="download-btn btn btn-success" id="downloadAnnotatedImage">
+                                <i class="fas fa-download"></i>标注图像
+                            </a>
+                            <a href="#" class="download-btn btn btn-info" id="downloadCorrectedCode">
+                                <i class="fas fa-download"></i>修正代码
+                            </a>
+                            <a href="#" class="download-btn btn btn-warning" id="downloadCorrectedImage">
+                                <i class="fas fa-download"></i>修正图像
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 任务历史管理 -->
+        <div class="row mt-4" id="history-section">
+            <div class="col-12">
+                <div class="history-panel">
+                    <h5 class="mb-3">
+                        <i class="fas fa-history me-2"></i>
+                        任务历史
+                    </h5>
+                    
+                    <div class="history-filters">
+                        <select class="form-select" id="statusFilter" style="width: auto;">
+                            <option value="">所有状态</option>
+                            <option value="completed">已完成</option>
+                            <option value="failed">失败</option>
+                            <option value="processing">处理中</option>
+                            <option value="pending">等待中</option>
+                        </select>
+                        <button class="btn btn-outline-primary btn-sm" id="refreshHistoryBtn">
+                            <i class="fas fa-sync-alt me-1"></i>刷新
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" id="clearHistoryBtn">
+                            <i class="fas fa-trash me-1"></i>清空历史
+                        </button>
+                    </div>
+
+                    <div class="task-history-list" id="taskHistoryList">
+                        <!-- 历史任务将通过JavaScript动态生成 -->
+                        <div class="text-center p-4 text-muted" id="historyPlaceholder">
+                            <i class="fas fa-clock" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                            <p>暂无历史任务</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Prism.js for code highlighting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+    <script>
+        /**
+         * UML错误检查器主类
+         */
+        class UMLErrorChecker {
+            constructor() {
+                this.apiBase = 'http://localhost:8000';
+                this.currentTask = null;
+                this.pollInterval = null;
+                this.currentFile = null;
+                
+                this.init();
+            }
+
+            /**
+             * 初始化应用
+             */
+            init() {
+                this.setupEventListeners();
+                this.loadSystemStats();
+                this.loadTaskHistory();
+                
+                // 定期更新系统统计
+                setInterval(() => this.loadSystemStats(), 30000);
+            }
+
+            /**
+             * 设置事件监听器
+             */
+            setupEventListeners() {
+                // 文件上传相关
+                const uploadZone = document.getElementById('uploadZone');
+                const fileInput = document.getElementById('fileInput');
+                
+                // 拖拽上传
+                uploadZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadZone.classList.add('drag-over');
+                });
+                
+                uploadZone.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    uploadZone.classList.remove('drag-over');
+                });
+                
+                uploadZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadZone.classList.remove('drag-over');
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        this.handleFileSelect(files[0]);
+                    }
+                });
+                
+                // 文件选择
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        this.handleFileSelect(e.target.files[0]);
+                    }
+                });
+                
+                // 按钮事件
+                document.getElementById('clearFileBtn').addEventListener('click', () => this.clearFile());
+                document.getElementById('submitTaskBtn').addEventListener('click', () => this.submitTask());
+                document.getElementById('cancelTaskBtn').addEventListener('click', () => this.cancelTask());
+                
+                // 历史管理
+                document.getElementById('refreshHistoryBtn').addEventListener('click', () => this.loadTaskHistory());
+                document.getElementById('clearHistoryBtn').addEventListener('click', () => this.clearHistory());
+                document.getElementById('statusFilter').addEventListener('change', () => this.loadTaskHistory());
+                
+                // 下载按钮
+                document.getElementById('downloadErrorAnalysis').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.downloadFile('error_analysis');
+                });
+                document.getElementById('downloadAnnotatedImage').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.downloadFile('annotated_image');
+                });
+                document.getElementById('downloadCorrectedCode').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.downloadFile('corrected_uml');
+                });
+                document.getElementById('downloadCorrectedImage').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.downloadFile('corrected_image');
+                });
+            }
+
+            /**
+             * 处理文件选择
+             */
+            handleFileSelect(file) {
+                // 验证文件类型
+                const allowedTypes = ['.mdj', '.png', '.jpg', '.jpeg', '.bmp', '.gif', '.tiff'];
+                const fileExt = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+                
+                if (!allowedTypes.includes(fileExt)) {
+                    this.showAlert('不支持的文件格式！请选择StarUML (.mdj) 或图片文件。', 'danger');
+                    return;
+                }
+                
+                this.currentFile = file;
+                this.displayFileInfo(file);
+                
+                // 启用按钮
+                document.getElementById('clearFileBtn').disabled = false;
+                document.getElementById('submitTaskBtn').disabled = false;
+            }
+
+            /**
+             * 显示文件信息
+             */
+            displayFileInfo(file) {
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileSize').textContent = this.formatFileSize(file.size);
+                document.getElementById('fileType').textContent = this.getFileType(file.name);
+                
+                document.getElementById('fileInfo').classList.remove('d-none');
+            }
+
+            /**
+             * 清除文件
+             */
+            clearFile() {
+                this.currentFile = null;
+                document.getElementById('fileInput').value = '';
+                document.getElementById('fileInfo').classList.add('d-none');
+                
+                // 禁用按钮
+                document.getElementById('clearFileBtn').disabled = true;
+                document.getElementById('submitTaskBtn').disabled = true;
+            }
+
+            /**
+             * 提交任务
+             */
+            async submitTask() {
+                if (!this.currentFile) {
+                    this.showAlert('请先选择文件！', 'warning');
+                    return;
+                }
+
+                try {
+                    // 显示上传进度
+                    this.showUploadProgress();
+                    
+                    // 确定任务类型
+                    const taskType = this.currentFile.name.toLowerCase().endsWith('.mdj') ? 'staruml' : 'image';
+                    
+                    // 创建FormData
+                    const formData = new FormData();
+                    formData.append('file', this.currentFile);
+                    formData.append('task_type', taskType);
+                    
+                    // 提交任务
+                    const response = await fetch(`${this.apiBase}/api/tasks/submit`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const result = await response.json();
+                    
+                    // 隐藏上传进度
+                    this.hideUploadProgress();
+                    
+                    // 开始监控任务
+                    this.currentTask = result.task_id;
+                    this.startTaskMonitoring(result.task_id);
+                    
+                    // 隐藏欢迎面板，显示任务面板
+                    document.getElementById('welcomePanel').classList.add('d-none');
+                    document.getElementById('taskPanel').classList.remove('d-none');
+                    
+                    this.showAlert('任务提交成功！正在处理中...', 'success');
+                    
+                } catch (error) {
+                    this.hideUploadProgress();
+                    this.showAlert(`任务提交失败: ${error.message}`, 'danger');
+                    console.error('Submit task error:', error);
+                }
+            }
+
+            /**
+             * 开始任务监控
+             */
+            startTaskMonitoring(taskId) {
+                // 更新任务信息
+                document.getElementById('taskId').textContent = taskId;
+                document.getElementById('taskCreatedAt').textContent = new Date().toLocaleString();
+                
+                // 开始轮询
+                this.pollInterval = setInterval(() => {
+                    this.checkTaskStatus(taskId);
+                }, 2000);
+                
+                // 立即检查一次
+                this.checkTaskStatus(taskId);
+            }
+
+            /**
+             * 检查任务状态
+             */
+            async checkTaskStatus(taskId) {
+                try {
+                    const response = await fetch(`${this.apiBase}/api/tasks/${taskId}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const taskData = await response.json();
+                    this.updateTaskDisplay(taskData);
+                    
+                    // 如果任务完成或失败，停止轮询
+                    if (taskData.status === 'completed' || taskData.status === 'failed') {
+                        clearInterval(this.pollInterval);
+                        this.pollInterval = null;
+                        
+                        if (taskData.status === 'completed') {
+                            this.displayResults(taskData);
+                        } else {
+                            this.showAlert(`任务失败: ${taskData.error_message || '未知错误'}`, 'danger');
+                        }
+                    }
+                    
+                } catch (error) {
+                    console.error('Check task status error:', error);
+                    this.showAlert(`检查任务状态失败: ${error.message}`, 'danger');
+                }
+            }
+
+            /**
+             * 更新任务显示
+             */
+            updateTaskDisplay(taskData) {
+                // 更新状态
+                const statusElement = document.getElementById('taskStatus');
+                statusElement.textContent = this.getStatusText(taskData.status);
+                statusElement.className = `task-status status-${taskData.status}`;
+                
+                // 更新进度
+                const progress = taskData.progress || 0;
+                document.getElementById('progressPercent').textContent = `${progress}%`;
+                document.getElementById('taskProgressBar').style.width = `${progress}%`;
+                
+                // 更新步骤
+                this.updateProcessingSteps(progress);
+            }
+
+            /**
+             * 更新处理步骤
+             */
+            updateProcessingSteps(progress) {
+                const steps = [
+                    { id: 'step1', threshold: 10 },
+                    { id: 'step2', threshold: 30 },
+                    { id: 'step3', threshold: 50 },
+                    { id: 'step4', threshold: 70 },
+                    { id: 'step5', threshold: 90 }
+                ];
+                
+                steps.forEach((step, index) => {
+                    const stepElement = document.getElementById(step.id);
+                    const iconElement = stepElement.querySelector('.step-icon');
+                    
+                    if (progress >= step.threshold) {
+                        iconElement.className = 'step-icon step-completed';
+                        iconElement.innerHTML = '<i class="fas fa-check"></i>';
+                    } else if (index === 0 || progress >= steps[index - 1].threshold) {
+                        iconElement.className = 'step-icon step-current';
+                        iconElement.innerHTML = index + 1;
+                    } else {
+                        iconElement.className = 'step-icon step-pending';
+                        iconElement.innerHTML = index + 1;
+                    }
+                });
+            }
+
+            /**
+             * 显示结果
+             */
+            async displayResults(taskData) {
+                try {
+                    // 获取错误分析结果
+                    if (taskData.result_links && taskData.result_links.error_analysis) {
+                        const errorResponse = await fetch(`${this.apiBase}${taskData.result_links.error_analysis}`);
+                        if (errorResponse.ok) {
+                            const errorData = await errorResponse.json();
+                            this.displayErrorAnalysis(errorData);
+                        }
+                    }
+                    
+                    // 显示图像
+                    this.displayImages(taskData);
+                    
+                    // 显示修正建议
+                    if (taskData.result_links && taskData.result_links.corrected_uml) {
+                        const correctionResponse = await fetch(`${this.apiBase}${taskData.result_links.corrected_uml}`);
+                        if (correctionResponse.ok) {
+                            const correctionData = await correctionResponse.json();
+                            this.displayCorrections(correctionData);
+                        }
+                    }
+                    
+                    // 更新下载链接
+                    this.updateDownloadLinks(taskData);
+                    
+                    // 刷新历史记录
+                
+this.loadTaskHistory();
+                    
+                } catch (error) {
+                    console.error('Display results error:', error);
+                    this.showAlert(`显示结果失败: ${error.message}`, 'danger');
+                }
+            }
+
+            /**
+             * 显示错误分析
+             */
+            displayErrorAnalysis(errorData) {
+                const errors = errorData.errors || [];
+                const summary = errorData.summary || {};
+                
+                // 更新摘要
+                document.getElementById('totalErrors').textContent = errors.length;
+                document.getElementById('syntaxErrors').textContent = 
+                    errors.filter(e => e.type === '语法错误').length;
+                document.getElementById('semanticErrors').textContent = 
+                    errors.filter(e => e.type === '语义错误').length;
+                document.getElementById('severityLevel').textContent = summary.severity_level || '-';
+                
+                // 生成错误列表
+                const errorList = document.getElementById('errorList');
+                errorList.innerHTML = '';
+                
+                if (errors.length === 0) {
+                    errorList.innerHTML = `
+                        <div class="text-center p-4 text-success">
+                            <i class="fas fa-check-circle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <h5>恭喜！未发现错误</h5>
+                            <p class="text-muted">您的UML图符合规范要求</p>
+                        </div>
+                    `;
+                } else {
+                    errors.forEach((error, index) => {
+                        const errorItem = this.createErrorItem(error, index + 1);
+                        errorList.appendChild(errorItem);
+                    });
+                }
+                
+                // 显示错误分析面板
+                document.getElementById('errorAnalysis').classList.remove('d-none');
+            }
+
+            /**
+             * 创建错误项元素
+             */
+            createErrorItem(error, index) {
+                const div = document.createElement('div');
+                div.className = `error-item error-${error.type.toLowerCase().replace('错误', '')}`;
+                
+                div.innerHTML = `
+                    <div class="error-header">
+                        <span class="error-type">${index}. ${error.type}</span>
+                        <span class="error-element">${error.element}</span>
+                    </div>
+                    <div class="error-description">${error.error_description}</div>
+                    <div class="error-suggestion">${error.suggestion}</div>
+                `;
+                
+                return div;
+            }
+
+            /**
+             * 显示图像
+             */
+            displayImages(taskData) {
+                const links = taskData.result_links || {};
+                
+                // 原始图像（如果是图片任务）
+                if (taskData.task_type === 'image') {
+                    // 这里可以显示原始上传的图像
+                    // 由于安全限制，我们显示占位符
+                    document.getElementById('originalPlaceholder').innerHTML = `
+                        <i class="fas fa-image" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <p>原始图像: ${taskData.original_filename}</p>
+                    `;
+                }
+                
+                // 标注图像
+                if (links.annotated_image) {
+                    const annotatedImg = document.getElementById('annotatedImg');
+                    annotatedImg.src = `${this.apiBase}${links.annotated_image}`;
+                    annotatedImg.style.display = 'block';
+                    const annotatedPlaceholder = document.getElementById('annotatedPlaceholder');
+                    if (annotatedPlaceholder) {
+                        annotatedPlaceholder.style.display = 'none';
+                    }
+                }
+                
+                // 修正后图像
+                if (links.corrected_image) {
+                    const correctedImg = document.getElementById('correctedImg');
+                    correctedImg.src = `${this.apiBase}${links.corrected_image}`;
+                    correctedImg.style.display = 'block';
+                    const correctedPlaceholder = document.getElementById('correctedPlaceholder');
+                    if (correctedPlaceholder) {
+                        correctedPlaceholder.style.display = 'none';
+                    }
+                }
+                
+                // 显示图像查看器
+                document.getElementById('imageViewer').classList.remove('d-none');
+            }
+
+            /**
+             * 显示修正建议
+             */
+            displayCorrections(correctionData) {
+                // 显示修改说明
+                const modificationList = document.getElementById('modificationList');
+                modificationList.innerHTML = '';
+                
+                if (correctionData.modification_notes) {
+                    const notes = correctionData.modification_notes.split('\n')
+                        .filter(line => line.trim().startsWith('- 修改'))
+                        .map(line => line.replace('- 修改', '').trim());
+                    
+                    notes.forEach(note => {
+                        const li = document.createElement('li');
+                        li.textContent = note;
+                        modificationList.appendChild(li);
+                    });
+                }
+                
+                // 显示代码对比
+                if (correctionData.original_plantuml) {
+                    document.getElementById('originalCode').textContent = correctionData.original_plantuml;
+                }
+                
+                if (correctionData.corrected_plantuml) {
+                    document.getElementById('correctedCode').textContent = correctionData.corrected_plantuml;
+                }
+                
+                // 重新高亮代码
+                if (window.Prism) {
+                    Prism.highlightAll();
+                }
+                
+                // 显示修正面板
+                document.getElementById('correctionPanel').classList.remove('d-none');
+            }
+
+            /**
+             * 更新下载链接
+             */
+            updateDownloadLinks(taskData) {
+                const links = taskData.result_links || {};
+                
+                // 更新下载按钮的href属性
+                if (links.error_analysis) {
+                    document.getElementById('downloadErrorAnalysis').href = `${this.apiBase}${links.error_analysis}`;
+                }
+                if (links.annotated_image) {
+                    document.getElementById('downloadAnnotatedImage').href = `${this.apiBase}${links.annotated_image}`;
+                }
+                if (links.corrected_uml) {
+                    document.getElementById('downloadCorrectedCode').href = `${this.apiBase}${links.corrected_uml}`;
+                }
+                if (links.corrected_image) {
+                    document.getElementById('downloadCorrectedImage').href = `${this.apiBase}${links.corrected_image}`;
+                }
+            }
+
+            /**
+             * 下载文件
+             */
+            async downloadFile(fileType) {
+                if (!this.currentTask) {
+                    this.showAlert('没有可下载的文件！', 'warning');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`${this.apiBase}/api/tasks/${this.currentTask}/files/${fileType}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${this.currentTask}_${fileType}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    
+                    window.URL.revokeObjectURL(url);
+                    
+                } catch (error) {
+                    console.error('Download file error:', error);
+                    this.showAlert(`下载失败: ${error.message}`, 'danger');
+                }
+            }
+
+            /**
+             * 取消任务
+             */
+            async cancelTask() {
+                if (!this.currentTask) return;
+                
+                try {
+                    const response = await fetch(`${this.apiBase}/api/tasks/${this.currentTask}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        this.showAlert('任务已取消', 'info');
+                    }
+                    
+                } catch (error) {
+                    console.error('Cancel task error:', error);
+                }
+                
+                // 停止轮询
+                if (this.pollInterval) {
+                    clearInterval(this.pollInterval);
+                    this.pollInterval = null;
+                }
+                
+                // 重置界面
+                this.resetInterface();
+            }
+
+            /**
+             * 重置界面
+             */
+            resetInterface() {
+                this.currentTask = null;
+                
+                // 隐藏所有结果面板
+                document.getElementById('taskPanel').classList.add('d-none');
+                document.getElementById('errorAnalysis').classList.add('d-none');
+                document.getElementById('imageViewer').classList.add('d-none');
+                document.getElementById('correctionPanel').classList.add('d-none');
+                
+                // 显示欢迎面板
+                document.getElementById('welcomePanel').classList.remove('d-none');
+                
+                // 清除文件
+                this.clearFile();
+            }
+
+            /**
+             * 加载系统统计
+             */
+            async loadSystemStats() {
+                try {
+                    const response = await fetch(`${this.apiBase}/api/stats`);
+                    
+                    if (response.ok) {
+                        const stats = await response.json();
+                        document.getElementById('stats-text').textContent = 
+                            `队列: ${stats.queue_size} | 完成: ${stats.completed_tasks}`;
+                    } else {
+                        document.getElementById('stats-text').textContent = '服务器离线';
+                    }
+                    
+                } catch (error) {
+                    document.getElementById('stats-text').textContent = '连接失败';
+                }
+            }
+
+            /**
+             * 加载任务历史
+             */
+            async loadTaskHistory() {
+                try {
+                    const statusFilter = document.getElementById('statusFilter').value;
+                    let url = `${this.apiBase}/api/tasks?limit=20`;
+                    
+                    if (statusFilter) {
+                        url += `&status=${statusFilter}`;
+                    }
+                    
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const data = await response.json();
+                    this.displayTaskHistory(data.tasks);
+                    
+                } catch (error) {
+                    console.error('Load task history error:', error);
+                    this.showAlert(`加载历史记录失败: ${error.message}`, 'danger');
+                }
+            }
+
+            /**
+             * 显示任务历史
+             */
+            displayTaskHistory(tasks) {
+                const historyList = document.getElementById('taskHistoryList');
+                const placeholder = document.getElementById('historyPlaceholder');
+                
+                if (tasks.length === 0) {
+                    if (placeholder) {
+                        placeholder.style.display = 'block';
+                    }
+                    historyList.innerHTML = '';
+                    if (placeholder) {
+                        historyList.appendChild(placeholder);
+                    }
+                    return;
+                }
+                
+                if (placeholder) {
+                    placeholder.style.display = 'none';
+                }
+                historyList.innerHTML = '';
+                
+                tasks.forEach(task => {
+                    const taskItem = this.createHistoryItem(task);
+                    historyList.appendChild(taskItem);
+                });
+            }
+
+            /**
+             * 创建历史项元素
+             */
+            createHistoryItem(task) {
+                const div = document.createElement('div');
+                div.className = 'task-history-item';
+                
+                const statusClass = `status-${task.status}`;
+                const statusText = this.getStatusText(task.status);
+                const createdAt = new Date(task.created_at).toLocaleString();
+                
+                div.innerHTML = `
+                    <div class="task-meta">
+                        <span class="task-filename">${task.original_filename}</span>
+                        <span class="task-time">${createdAt}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="task-status ${statusClass}">${statusText}</span>
+                        <div class="task-actions">
+                            ${task.status === 'completed' ? `
+                                <button class="btn btn-outline-primary btn-sm" onclick="app.viewTask('${task.task_id}')">
+                                    <i class="fas fa-eye me-1"></i>查看
+                                </button>
+                            ` : ''}
+                            <button class="btn btn-outline-danger btn-sm" onclick="app.deleteTask('${task.task_id}')">
+                                <i class="fas fa-trash me-1"></i>删除
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                return div;
+            }
+
+            /**
+             * 查看历史任务
+             */
+            async viewTask(taskId) {
+                try {
+                    const response = await fetch(`${this.apiBase}/api/tasks/${taskId}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const taskData = await response.json();
+                    
+                    if (taskData.status === 'completed') {
+                        this.currentTask = taskId;
+                        this.displayResults(taskData);
+                        
+                        // 滚动到结果区域
+                        document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+                    }
+                    
+                } catch (error) {
+                    console.error('View task error:', error);
+                    this.showAlert(`查看任务失败: ${error.message}`, 'danger');
+                }
+            }
+
+            /**
+             * 删除任务
+             */
+            async deleteTask(taskId) {
+                if (!confirm('确定要删除这个任务吗？')) {
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`${this.apiBase}/api/tasks/${taskId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        this.showAlert('任务已删除', 'success');
+                        this.loadTaskHistory();
+                    } else {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                } catch (error) {
+                    console.error('Delete task error:', error);
+                    this.showAlert(`删除任务失败: ${error.message}`, 'danger');
+                }
+            }
+
+            /**
+             * 清空历史
+             */
+            async clearHistory() {
+                if (!confirm('确定要清空所有历史记录吗？此操作不可恢复！')) {
+                    return;
+                }
+                
+                try {
+                    // 获取所有任务
+                    const response = await fetch(`${this.apiBase}/api/tasks`);
+                    if (!response.ok) return;
+                    
+                    const data = await response.json();
+                    const tasks = data.
+tasks;
+                    
+                    // 批量删除所有任务
+                    const deletePromises = tasks.map(task => 
+                        fetch(`${this.apiBase}/api/tasks/${task.task_id}`, { method: 'DELETE' })
+                    );
+                    
+                    await Promise.all(deletePromises);
+                    
+                    this.showAlert('历史记录已清空', 'success');
+                    this.loadTaskHistory();
+                    
+                } catch (error) {
+                    console.error('Clear history error:', error);
+                    this.showAlert(`清空历史失败: ${error.message}`, 'danger');
+                }
+            }
+
+            /**
+             * 显示上传进度
+             */
+            showUploadProgress() {
+                document.getElementById('uploadProgress').classList.remove('d-none');
+                document.querySelector('.upload-content').style.display = 'none';
+                document.getElementById('uploadZone').classList.add('uploading');
+                
+                // 模拟上传进度
+                let progress = 0;
+                const progressBar = document.getElementById('uploadProgressBar');
+                const statusText = document.getElementById('uploadStatus');
+                
+                const interval = setInterval(() => {
+                    progress += Math.random() * 30;
+                    if (progress > 90) progress = 90;
+                    
+                    progressBar.style.width = `${progress}%`;
+                    statusText.textContent = `上传中... ${Math.round(progress)}%`;
+                    
+                    if (progress >= 90) {
+                        clearInterval(interval);
+                        statusText.textContent = '处理中...';
+                    }
+                }, 200);
+            }
+
+            /**
+             * 隐藏上传进度
+             */
+            hideUploadProgress() {
+                document.getElementById('uploadProgress').classList.add('d-none');
+                document.querySelector('.upload-content').style.display = 'block';
+                document.getElementById('uploadZone').classList.remove('uploading');
+            }
+
+            /**
+             * 显示提示信息
+             */
+            showAlert(message, type = 'info') {
+                // 创建提示框
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+                alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+                
+                alertDiv.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                document.body.appendChild(alertDiv);
+                
+                // 自动移除
+                setTimeout(() => {
+                    if (alertDiv.parentNode) {
+                        alertDiv.parentNode.removeChild(alertDiv);
+                    }
+                }, 5000);
+            }
+
+            /**
+             * 工具方法：格式化文件大小
+             */
+            formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            /**
+             * 工具方法：获取文件类型
+             */
+            getFileType(filename) {
+                const ext = filename.toLowerCase().substring(filename.lastIndexOf('.'));
+                
+                switch (ext) {
+                    case '.mdj':
+                        return 'StarUML 文件';
+                    case '.png':
+                        return 'PNG 图像';
+                    case '.jpg':
+                    case '.jpeg':
+                        return 'JPEG 图像';
+                    case '.bmp':
+                        return 'BMP 图像';
+                    case '.gif':
+                        return 'GIF 图像';
+                    case '.tiff':
+                        return 'TIFF 图像';
+                    default:
+                        return '未知类型';
+                }
+            }
+
+            /**
+             * 工具方法：获取状态文本
+             */
+            getStatusText(status) {
+                const statusMap = {
+                    'pending': '等待中',
+                    'processing': '处理中',
+                    'completed': '已完成',
+                    'failed': '失败'
+                };
+                
+                return statusMap[status] || status;
+            }
+        }
+
+        // 初始化应用
+        let app;
+        document.addEventListener('DOMContentLoaded', () => {
+            app = new UMLErrorChecker();
+        });
+
+        // 全局错误处理
+        window.addEventListener('error', (event) => {
+            console.error('Global error:', event.error);
+        });
+
+        // 网络状态监控
+        window.addEventListener('online', () => {
+            if (app) {
+                app.showAlert('网络连接已恢复', 'success');
+                app.loadSystemStats();
+            }
+        });
+
+        window.addEventListener('offline', () => {
+            if (app) {
+                app.showAlert('网络连接已断开', 'warning');
+            }
+        });
+    </script>
+</body>
+</html>

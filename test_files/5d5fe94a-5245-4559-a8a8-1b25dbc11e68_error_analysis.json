@@ -1,0 +1,39 @@
+{
+  "errors": [
+    {
+      "region": {
+        "description": "类User的属性部分",
+        "coordinates": {
+          "x1": 10.0,
+          "y1": 40.0,
+          "x2": 90.0,
+          "y2": 65.0
+        }
+      },
+      "type": "语法错误",
+      "element": "属性",
+      "error_description": "属性的可见性标识\"private\"应使用符号“-”而非文字。",
+      "suggestion": "将属性前的\"private\"改为符号“-”，例如“- id: int”。"
+    },
+    {
+      "region": {
+        "description": "类User的操作部分",
+        "coordinates": {
+          "x1": 10.0,
+          "y1": 70.0,
+          "x2": 90.0,
+          "y2": 90.0
+        }
+      },
+      "type": "语法错误",
+      "element": "操作",
+      "error_description": "操作的可见性标识\"public\"应使用符号“+”而非文字。",
+      "suggestion": "将操作前的\"public\"改为符号“+”，例如“+ getName(): string”。"
+    }
+  ],
+  "summary": {
+    "total_errors": 2,
+    "severity_level": "中等"
+  },
+  "raw_xml_response": "<uml_analysis>\n  <errors>\n    <error>\n      <region>\n        <description>类User的属性部分</description>\n        <coordinates>\n          <x1>10</x1>\n          <y1>40</y1>\n          <x2>90</x2>\n          <y2>65</y2>\n        </coordinates>\n      </region>\n      <type>语法错误</type>\n      <element>属性</element>\n      <error_description>属性的可见性标识\"private\"应使用符号“-”而非文字。</error_description>\n      <suggestion>将属性前的\"private\"改为符号“-”，例如“- id: int”。</suggestion>\n    </error>\n    <error>\n      <region>\n        <description>类User的操作部分</description>\n        <coordinates>\n          <x1>10</x1>\n          <y1>70</y1>\n          <x2>90</x2>\n          <y2>90</y2>\n        </coordinates>\n      </region>\n      <type>语法错误</type>\n      <element>操作</element>\n      <error_description>操作的可见性标识\"public\"应使用符号“+”而非文字。</error_description>\n      <suggestion>将操作前的\"public\"改为符号“+”，例如“+ getName(): string”。</suggestion>\n    </error>\n  </errors>\n  <summary>\n    <total_errors>2</total_errors>\n    <severity_level>中等</severity_level>\n  </summary>\n</uml_analysis>"
+}

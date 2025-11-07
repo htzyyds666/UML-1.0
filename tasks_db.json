@@ -1,0 +1,156 @@
+{
+  "tasks": {
+    "9181648e-3278-4396-aa8e-249ffc9e6ef8": {
+      "task_id": "9181648e-3278-4396-aa8e-249ffc9e6ef8",
+      "task_type": "image",
+      "status": "completed",
+      "input_file_path": "uploads\\9181648e-3278-4396-aa8e-249ffc9e6ef8\\mmexport1761537933264.jpg",
+      "original_filename": "mmexport1761537933264.jpg",
+      "created_at": "2025-10-30T09:52:11.663112+00:00",
+      "updated_at": "2025-10-30T09:53:40.690248+00:00",
+      "progress": 100,
+      "error_message": null,
+      "error_analysis_result": "results\\9181648e-3278-4396-aa8e-249ffc9e6ef8\\error_analysis.json",
+      "annotated_image_path": "D:\\UserData\\Desktop\\projects\\UML1\\uploads\\9181648e-3278-4396-aa8e-249ffc9e6ef8\\mmexport1761537933264_annotated_20251030_175250.jpg",
+      "corrected_uml_path": "results\\9181648e-3278-4396-aa8e-249ffc9e6ef8\\corrected_result.json",
+      "corrected_image_path": "D:\\UserData\\Desktop\\projects\\UML1\\jpg_output\\corrected_9181648e-3278-4396-aa8e-249ffc9e6ef8.jpg",
+      "results": {
+        "error_count": 5,
+        "severity_level": "中等",
+        "has_corrections": true
+      }
+    },
+    "0fae0536-d252-44dd-9b2e-649a501f4c0b": {
+      "task_id": "0fae0536-d252-44dd-9b2e-649a501f4c0b",
+      "task_type": "image",
+      "status": "completed",
+      "input_file_path": "uploads\\0fae0536-d252-44dd-9b2e-649a501f4c0b\\703345f28f445c84162cd1748e00b7da.png",
+      "original_filename": "703345f28f445c84162cd1748e00b7da.png",
+      "created_at": "2025-10-30T13:17:00.304051+00:00",
+      "updated_at": "2025-10-30T13:18:26.940688+00:00",
+      "progress": 100,
+      "error_message": null,
+      "error_analysis_result": "results\\0fae0536-d252-44dd-9b2e-649a501f4c0b\\error_analysis.json",
+      "annotated_image_path": "C:\\Users\\H1898\\Desktop\\UML\\uploads\\0fae0536-d252-44dd-9b2e-649a501f4c0b\\703345f28f445c84162cd1748e00b7da_annotated_20251030_211739.jpg",
+      "corrected_uml_path": "results\\0fae0536-d252-44dd-9b2e-649a501f4c0b\\corrected_result.json",
+      "corrected_image_path": "C:\\Users\\H1898\\Desktop\\UML\\jpg_output\\corrected_0fae0536-d252-44dd-9b2e-649a501f4c0b.jpg",
+      "results": {
+        "error_count": 5,
+        "severity_level": "中等",
+        "has_corrections": true
+      }
+    },
+    "e8fc0db5-6af8-433c-b508-f4b3723cdc5e": {
+      "task_id": "e8fc0db5-6af8-433c-b508-f4b3723cdc5e",
+      "task_type": "image",
+      "status": "completed",
+      "input_file_path": "uploads\\e8fc0db5-6af8-433c-b508-f4b3723cdc5e\\49ae1e7a5cc999b0b5fc06238a03d00e.png",
+      "original_filename": "49ae1e7a5cc999b0b5fc06238a03d00e.png",
+      "created_at": "2025-11-06T06:00:34.370651+00:00",
+      "updated_at": "2025-11-06T06:02:04.754018+00:00",
+      "progress": 100,
+      "error_message": null,
+      "error_analysis_result": "results\\e8fc0db5-6af8-433c-b508-f4b3723cdc5e\\error_analysis.json",
+      "annotated_image_path": "C:\\Users\\H1898\\Desktop\\UML\\uploads\\e8fc0db5-6af8-433c-b508-f4b3723cdc5e\\49ae1e7a5cc999b0b5fc06238a03d00e_annotated_20251106_140112.jpg",
+      "corrected_uml_path": "results\\e8fc0db5-6af8-433c-b508-f4b3723cdc5e\\corrected_result.json",
+      "corrected_image_path": "C:\\Users\\H1898\\Desktop\\UML\\jpg_output\\corrected_e8fc0db5-6af8-433c-b508-f4b3723cdc5e.jpg",
+      "results": {
+        "error_count": 5,
+        "severity_level": "中等",
+        "has_corrections": true
+      }
+    },
+    "779a1f80-2b5a-4794-a7f6-bf52a842c01d": {
+      "task_id": "779a1f80-2b5a-4794-a7f6-bf52a842c01d",
+      "task_type": "image",
+      "status": "completed",
+      "input_file_path": "uploads\\779a1f80-2b5a-4794-a7f6-bf52a842c01d\\a5f8fa8b7b31ca53147107b54098f17f.png",
+      "original_filename": "a5f8fa8b7b31ca53147107b54098f17f.png",
+      "created_at": "2025-11-06T09:08:22.113644+00:00",
+      "updated_at": "2025-11-06T09:10:09.258778+00:00",
+      "progress": 100,
+      "error_message": null,
+      "error_analysis_result": "results\\779a1f80-2b5a-4794-a7f6-bf52a842c01d\\error_analysis.json",
+      "annotated_image_path": "C:\\Users\\H1898\\Desktop\\UML\\uploads\\779a1f80-2b5a-4794-a7f6-bf52a842c01d\\a5f8fa8b7b31ca53147107b54098f17f_annotated_20251106_170909.jpg",
+      "corrected_uml_path": "results\\779a1f80-2b5a-4794-a7f6-bf52a842c01d\\corrected_result.json",
+      "corrected_image_path": "C:\\Users\\H1898\\Desktop\\UML\\jpg_output\\corrected_779a1f80-2b5a-4794-a7f6-bf52a842c01d.jpg",
+      "results": {
+        "error_count": 5,
+        "severity_level": "中等",
+        "has_corrections": true
+      }
+    },
+    "3508eb48-accf-4bee-a42d-f8b40fd1e1e2": {
+      "task_id": "3508eb48-accf-4bee-a42d-f8b40fd1e1e2",
+      "task_type": "image",
+      "status": "completed",
+      "input_file_path": "uploads\\3508eb48-accf-4bee-a42d-f8b40fd1e1e2\\49ae1e7a5cc999b0b5fc06238a03d00e.png",
+      "original_filename": "49ae1e7a5cc999b0b5fc06238a03d00e.png",
+      "created_at": "2025-11-06T11:10:51.956399+00:00",
+      "updated_at": "2025-11-06T11:12:25.769592+00:00",
+      "progress": 100,
+      "error_message": null,
+      "error_analysis_result": "results\\3508eb48-accf-4bee-a42d-f8b40fd1e1e2\\error_analysis.json",
+      "annotated_image_path": "C:\\Users\\H1898\\Desktop\\UML\\uploads\\3508eb48-accf-4bee-a42d-f8b40fd1e1e2\\49ae1e7a5cc999b0b5fc06238a03d00e_annotated_20251106_191133.jpg",
+      "corrected_uml_path": "results\\3508eb48-accf-4bee-a42d-f8b40fd1e1e2\\corrected_result.json",
+      "corrected_image_path": "C:\\Users\\H1898\\Desktop\\UML\\jpg_output\\corrected_3508eb48-accf-4bee-a42d-f8b40fd1e1e2.jpg",
+      "results": {
+        "error_count": 5,
+        "severity_level": "中等",
+        "has_corrections": true
+      }
+    },
+    "8391fe9c-76fc-46b0-800d-361db9b56f11": {
+      "task_id": "8391fe9c-76fc-46b0-800d-361db9b56f11",
+      "task_type": "image",
+      "status": "failed",
+      "input_file_path": "uploads\\8391fe9c-76fc-46b0-800d-361db9b56f11\\图片8.png",
+      "original_filename": "图片8.png",
+      "created_at": "2025-11-06T11:13:13.894396+00:00",
+      "updated_at": "2025-11-06T11:14:45.301140+00:00",
+      "progress": 85,
+      "error_message": "图片任务处理失败: 生成 PlantUML 图像失败: PlantUML 执行失败 (返回码: 200)\n错误信息: Error line 76 in file: C:\\Users\\H1898\\AppData\\Local\\Temp\\tmpl2j2ujqs.puml\nSome diagram description contains errors\n",
+      "error_analysis_result": null,
+      "annotated_image_path": null,
+      "corrected_uml_path": null,
+      "corrected_image_path": null,
+      "results": null
+    },
+    "ca5fe515-b9d6-42ac-bdf2-2d610cb31b90": {
+      "task_id": "ca5fe515-b9d6-42ac-bdf2-2d610cb31b90",
+      "task_type": "image",
+      "status": "failed",
+      "input_file_path": "uploads\\ca5fe515-b9d6-42ac-bdf2-2d610cb31b90\\图片14.png",
+      "original_filename": "图片14.png",
+      "created_at": "2025-11-06T11:15:41.995350+00:00",
+      "updated_at": "2025-11-06T11:17:08.296484+00:00",
+      "progress": 85,
+      "error_message": "图片任务处理失败: 生成 PlantUML 图像失败: PlantUML 执行失败 (返回码: 200)\n错误信息: Error line 79 in file: C:\\Users\\H1898\\AppData\\Local\\Temp\\tmpaa77_097.puml\nSome diagram description contains errors\n",
+      "error_analysis_result": null,
+      "annotated_image_path": null,
+      "corrected_uml_path": null,
+      "corrected_image_path": null,
+      "results": null
+    },
+    "60ea3fad-3cd5-4f2b-a07b-81e159b85ca2": {
+      "task_id": "60ea3fad-3cd5-4f2b-a07b-81e159b85ca2",
+      "task_type": "image",
+      "status": "completed",
+      "input_file_path": "uploads\\60ea3fad-3cd5-4f2b-a07b-81e159b85ca2\\图片13.png",
+      "original_filename": "图片13.png",
+      "created_at": "2025-11-07T08:16:19.133271+00:00",
+      "updated_at": "2025-11-07T08:17:41.278547+00:00",
+      "progress": 100,
+      "error_message": null,
+      "error_analysis_result": "results\\60ea3fad-3cd5-4f2b-a07b-81e159b85ca2\\error_analysis.json",
+      "annotated_image_path": "C:\\Users\\H1898\\Desktop\\UML\\uploads\\60ea3fad-3cd5-4f2b-a07b-81e159b85ca2\\图片13_annotated_20251107_161657.jpg",
+      "corrected_uml_path": "results\\60ea3fad-3cd5-4f2b-a07b-81e159b85ca2\\corrected_result.json",
+      "corrected_image_path": "C:\\Users\\H1898\\Desktop\\UML\\jpg_output\\corrected_60ea3fad-3cd5-4f2b-a07b-81e159b85ca2.jpg",
+      "results": {
+        "error_count": 5,
+        "severity_level": "中等",
+        "has_corrections": true
+      }
+    }
+  }
+}

@@ -408,6 +408,327 @@ def test_plantuml_error_handling():
         print(f"❌ 错误处理测试失败: {str(e)}")
         return False
 
+def test_uml_error_analysis():
+    """测试UML错误分析功能"""
+    print("\n🧪 测试UML错误分析功能...")
+    
+    # 检查环境变量
+    api_key = os.getenv("OPENAI_API_KEY")
+    base_url = os.getenv("OPENAI_BASE_URL")
+    
+    if not api_key:
+        print("⚠️  跳过UML错误分析测试: 未设置OPENAI_API_KEY环境变量")
+        print("   请设置环境变量后重新测试:")
+        print("   export OPENAI_API_KEY='your-api-key'")
+        print("   export OPENAI_BASE_URL='your-base-url'  # 可选")
+        return False
+    
+    # 查找测试图片
+    test_images = []
+    for ext in ['.png', '.jpg', '.jpeg']:
+        # 先查找test目录
+        for file in Path('test').glob(f'*{ext}'):
+            test_images.append(str(file))
+        # 如果test目录没有，再查找当前目录
+        if not test_images:
+            for file in Path('.').glob(f'*{ext}'):
+                test_images.append(str(file))
+    
+    if not test_images:
+        print("⚠️  跳过UML错误分析测试: 当前目录下没有找到测试图片")
+        print("   请添加一些UML图片文件 (.png, .jpg, .jpeg) 到当前目录")
+        return False
+    
+    try:
+        # 使用第一个找到的图片进行测试
+        test_image = test_images[0]
+        print(f"📷 使用测试图片: {test_image}")
+        
+        parser = UMLParser(api_key, base_url)
+        result = parser.analyze_uml_errors(test_image)
+        
+        print(f"✅ UML错误分析成功!")
+        print(f"   图片路径: {test_image}")
+        
+        # 显示分析结果
+        summary = result.get('summary', {})
+        errors = result.get('errors', [])
+        
+        print(f"   错误总数: {summary.get('total_errors', 0)}")
+        print(f"   严重程度: {summary.get('severity_level', '未知')}")
+        
+        if errors:
+            print(f"   发现的错误:")
+            for i, error in enumerate(errors, 1):
+                print(f"     {i}. 类型: {error.get('type', '未知')}")
+                print(f"        元素: {error.get('element', '未知')}")
+                print(f"        位置: {error.get('region', {}).get('description', '未知')}")
+                coords = error.get('region', {}).get('coordinates', {})
+                if coords:
+                    print(f"        坐标: ({coords.get('x1', 0):.1f}, {coords.get('y1', 0):.1f}) - ({coords.get('x2', 0):.1f}, {coords.get('y2', 0):.1f})")
+                print(f"        描述: {error.get('error_description', '无描述')}")
+                print(f"        建议: {error.get('suggestion', '无建议')}")
+                print()
+        else:
+            print("   ✅ 未发现错误")
+        
+        # 保存分析结果
+        result_file = "test/error_analysis_result.json"
+        os.makedirs("test", exist_ok=True)
+        with open(result_file, "w", encoding="utf-8") as f:
+            json.dump(result, f, indent=2, ensure_ascii=False)
+        print(f"✅ 错误分析结果已保存到: {result_file}")
+        
+        return True
+        
+    except Exception as e:
+        print(f"❌ UML错误分析测试失败: {str(e)}")
+        return False
+
+def test_error_analysis_xml_parsing():
+    """测试XML解析功能"""
+    print("\n🧪 测试XML解析功能...")
+    
+    try:
+        parser = UMLParser("dummy_key", "dummy_url")
+        
+        # 测试有错误的XML
+        test_xml_with_errors = """<uml_analysis>
+  <errors>
+    <error>
+      <region>
+        <description>类User与类Account之间的关联线</description>
+        <coordinates>
+          <x1>15.5</x1>
+          <y1>22.3</y1>
+          <x2>35.7</x2>
+          <y2>28.9</y2>
+        </coordinates>
+      </region>
+      <type>语法错误</type>
+      <element>关联</element>
+      <error_description>关联线缺少多重性标记，未指定角色关系</error_description>
+      <suggestion>在关联线上添加适当的角色名和多重性标记</suggestion>
+    </error>
+  </errors>
+  <summary>
+    <total_errors>1</total_errors>
+    <severity_level>中等</severity_level>
+  </summary>
+</uml_analysis>"""
+        
+        result = parser._parse_error_analysis_xml(test_xml_with_errors)
+        
+        print("✅ XML解析测试成功!")
+        print(f"   解析出错误数量: {len(result['errors'])}")
+        print(f"   摘要信息: {result['summary']}")
+        
+        # 验证解析结果
+        if len(result['errors']) == 1:
+            print("✅ 错误数量正确")
+            
+            first_error = result['errors'][0]
+            if first_error.get('type') == '语法错误' and first_error.get('element') == '关联':
+                print("✅ 第一个错误信息正确")
+            
+            coords = first_error.get('region', {}).get('coordinates', {})
+            if coords.get('x1') == 15.5 and coords.get('y1') == 22.3:
+                print("✅ 坐标解析正确")
+        
+        return True
+        
+    except Exception as e:
+        print(f"❌ XML解析测试失败: {str(e)}")
+        return False
+
+def create_sample_uml_image():
+    """创建一个简单的测试UML图像（使用PlantUML）"""
+    print("\n📝 创建测试UML图像...")
+    
+    try:
+        # 创建一个包含一些常见错误的PlantUML代码
+        plantuml_with_errors = """@startuml
+title Sample UML with Potential Issues
+
+class User {
+  - id: int
+  - username: string
+  - email
+  --
+  + login()
+  + logout(): void
+}
+
+class Order {
+  - orderId: int
+  - amount: double
+  --
+  + calculateTotal()
+}
+
+class Account {
+  - accountId: int
+  - balance: double
+}
+
+User --> Order
+User -> Account
+
+@enduml"""
+        
+        # 尝试生成图像
+        parser = UMLParser("dummy_key", "dummy_url")
+        
+        java_paths_to_try = [
+            None,  # 先尝试自动检测
+            "jdk-25.0.1/bin/java.exe",  # Windows 版本
+            "jdk-25.0.1/bin/java",  # Linux/Mac 版本
+        ]
+        
+        image_path = None
+        for java_path in java_paths_to_try:
+            try:
+                image_path = parser.generate_plantuml_image(
+                    plantuml_with_errors,
+                    "test_uml_with_errors",
+                    java_path=java_path
+                )
+                break
+            except Exception as e:
+                continue
+        
+        if image_path:
+            print(f"✅ 测试UML图像创建成功: {image_path}")
+            return image_path
+        else:
+            print("⚠️  无法创建测试UML图像（Java环境问题）")
+            return None
+            
+    except Exception as e:
+        print(f"⚠️  创建测试UML图像失败: {str(e)}")
+        return None
+
+
+def test_image_annotation():
+    """测试图像标注功能"""
+    print("\n🧪 测试图像标注功能...")
+    
+    # 检查环境变量
+    api_key = os.getenv("OPENAI_API_KEY")
+    base_url = os.getenv("OPENAI_BASE_URL")
+    
+    if not api_key:
+        print("⚠️  跳过图像标注测试: 未设置OPENAI_API_KEY环境变量")
+        return False
+    
+    # 指定使用特定的测试图片
+    test_image = "mmexport1761537933264.jpg"
+    
+    if not os.path.exists(test_image):
+        print(f"⚠️  跳过图像标注测试: 指定的测试图片不存在: {test_image}")
+        return False
+    
+    try:
+        print(f"📷 使用指定测试图片: {test_image}")
+        
+        parser = UMLParser(api_key, base_url)
+        
+        # 先进行错误分析
+        print("🔍 进行错误分析...")
+        error_result = parser.analyze_uml_errors(test_image)
+        
+        # 进行图像标注
+        print("🎨 标注错误区域...")
+        annotated_path = parser.annotate_image_with_errors(test_image, error_result)
+        
+        print(f"✅ 图像标注成功!")
+        print(f"   原始图片: {test_image}")
+        print(f"   标注图片: {annotated_path}")
+        
+        # 验证标注文件是否存在
+        if os.path.exists(annotated_path):
+            print(f"✅ 标注图像文件已创建")
+            
+            # 检查文件大小
+            file_size = os.path.getsize(annotated_path)
+            print(f"   文件大小: {file_size} 字节")
+            
+            if file_size > 0:
+                print("✅ 标注图像文件不为空")
+            else:
+                print("⚠️  标注图像文件为空")
+                return False
+        else:
+            print(f"❌ 标注图像文件未找到: {annotated_path}")
+            return False
+        
+        return True
+        
+    except Exception as e:
+        print(f"❌ 图像标注测试失败: {str(e)}")
+        return False
+
+def test_uml_code_correction():
+    """测试UML代码纠错功能"""
+    print("\n🧪 测试UML代码纠错功能...")
+    
+    # 检查环境变量
+    api_key = os.getenv("OPENAI_API_KEY")
+    base_url = os.getenv("OPENAI_BASE_URL")
+    
+    if not api_key:
+        print("⚠️  跳过UML代码纠错测试: 未设置OPENAI_API_KEY环境变量")
+        return False
+    
+    # 指定使用特定的测试图片
+    test_image = "mmexport1761537933264.jpg"
+    
+    if not os.path.exists(test_image):
+        print(f"⚠️  跳过UML代码纠错测试: 指定的测试图片不存在: {test_image}")
+        return False
+    
+    try:
+        print(f"📷 使用指定测试图片: {test_image}")
+        
+        parser = UMLParser(api_key, base_url)
+        
+        # 进行UML代码纠错
+        print("🔧 生成修正后的UML代码...")
+        correction_result = parser.generate_corrected_uml(test_image)
+        
+        print(f"✅ UML代码纠错成功!")
+        
+        # 显示结果摘要
+        print(f"   原始UML结构元素数: {len(correction_result.get('original_uml', {}).get('uml_structure', {}).get('elements', []))}")
+        print(f"   发现错误数: {len(correction_result.get('error_analysis', {}).get('errors', []))}")
+        
+        # 检查是否有修正后的UML代码
+        if 'corrected_plantuml' in correction_result:
+            corrected_code = correction_result['corrected_plantuml']
+            print(f"   修正后PlantUML代码长度: {len(corrected_code)} 字符")
+            
+            # 显示部分修正后的代码
+            if corrected_code:
+                print("   修正后代码预览:")
+                lines = corrected_code.split('\n')[:10]  # 显示前10行
+                for line in lines:
+                    print(f"     {line}")
+                if len(corrected_code.split('\n')) > 10:
+                    print("     ...")
+        
+        # 保存纠错结果
+        result_file = "test/uml_correction_result.json"
+        os.makedirs("test", exist_ok=True)
+        with open(result_file, "w", encoding="utf-8") as f:
+            json.dump(correction_result, f, indent=2, ensure_ascii=False)
+        print(f"✅ 纠错结果已保存到: {result_file}")
+        
+        return True
+        
+    except Exception as e:
+        print(f"❌ UML代码纠错测试失败: {str(e)}")
+        return False
+
 
 def main():
     """运行所有测试"""
@@ -433,6 +754,25 @@ def main():
     
     # 测试PlantUML错误处理
     results.append(("PlantUML错误处理", test_plantuml_error_handling()))
+    
+    # 测试UML错误分析功能
+    results.append(("UML错误分析", test_uml_error_analysis()))
+    
+    # 测试XML解析功能
+    results.append(("XML解析功能", test_error_analysis_xml_parsing()))
+    
+    # 测试图像标注功能
+    results.append(("图像标注功能", test_image_annotation()))
+    
+    # 测试UML代码纠错功能
+    results.append(("UML代码纠错功能", test_uml_code_correction()))
+    
+    # 尝试创建测试UML图像
+    test_image_path = create_sample_uml_image()
+    if test_image_path:
+        results.append(("创建测试图像", True))
+    else:
+        results.append(("创建测试图像", False))
     
     # 显示测试结果
     print("\n" + "=" * 60)

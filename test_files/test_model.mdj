@@ -1,0 +1,38 @@
+{
+  "_type": "Project",
+  "name": "TestProject",
+  "ownedElements": [
+    {
+      "_type": "UMLModel",
+      "name": "Model",
+      "ownedElements": [
+        {
+          "_type": "UMLClass",
+          "name": "User",
+          "attributes": [
+            {
+              "_type": "UMLAttribute",
+              "name": "id",
+              "type": "int",
+              "visibility": "private"
+            },
+            {
+              "_type": "UMLAttribute",
+              "name": "name",
+              "type": "string",
+              "visibility": "private"
+            }
+          ],
+          "operations": [
+            {
+              "_type": "UMLOperation",
+              "name": "getName",
+              "returnType": "string",
+              "visibility": "public"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

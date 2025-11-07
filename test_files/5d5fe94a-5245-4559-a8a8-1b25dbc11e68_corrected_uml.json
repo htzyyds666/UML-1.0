@@ -1,0 +1,11 @@
+@startuml
+title Class Diagram
+
+class User {
+  private id: int
+  private name: string
+  --
+  public getName: string
+}
+
+@enduml
